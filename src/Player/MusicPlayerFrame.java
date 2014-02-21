@@ -12,6 +12,7 @@ import javazoom.jl.player.Player;
 import PlayerCommands.PlayCommand;
 
 import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
 import javax.swing.JMenuBar;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -38,6 +39,7 @@ import javax.swing.JSlider;
 import javax.swing.JLabel;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JList;
 import javax.swing.AbstractListModel;
 import javax.swing.JTable;
@@ -45,12 +47,15 @@ import javax.swing.JTable;
 import java.awt.Font;
 
 import javax.swing.table.DefaultTableModel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 
 public class MusicPlayerFrame extends JFrame {
 
 	private JPanel contentPane;
 	private Player player;
+	private MusicLibrary library;
 	private JTable currentPlaylistTable;
 
 	/**
@@ -63,6 +68,7 @@ public class MusicPlayerFrame extends JFrame {
 			public void run() {
 				try {
 					MusicPlayerFrame frame = new MusicPlayerFrame();
+					frame.library = new MusicLibrary();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -80,6 +86,27 @@ public class MusicPlayerFrame extends JFrame {
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
+		
+		JMenu fileMenu = new JMenu("File");
+		fileMenu.setIcon(null);
+		menuBar.add(fileMenu);
+		
+		JMenuItem addSongMenuItem = new JMenuItem("Add Song to Library");
+		addSongMenuItem.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				JFileChooser fileChosen = new JFileChooser();
+				FileNameExtensionFilter mp3filter = new FileNameExtensionFilter("MP3", "mp3");
+				fileChosen.setFileFilter(mp3filter);
+			    int returnVal = fileChosen.showOpenDialog(getParent());
+			    if(returnVal == JFileChooser.APPROVE_OPTION) {
+			       //System.out.println("You chose to open this file: " + fileChosen.getSelectedFile().getAbsolutePath());
+			       library.addSong(fileChosen.getSelectedFile().getAbsolutePath());
+			    }
+			}
+		});
+		fileMenu.add(addSongMenuItem);
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -282,5 +309,13 @@ public class MusicPlayerFrame extends JFrame {
 
 		Mp3 testFile = new Mp3("/Users/alynch/Desktop/test.mp3");
 		MusicHandler.commands.add(new PlayCommand(testFile));
+	}
+
+	public Player getPlayer() {
+		return player;
+	}
+
+	public void setPlayer(Player player) {
+		this.player = player;
 	}
 }

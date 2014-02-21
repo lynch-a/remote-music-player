@@ -9,7 +9,8 @@ public class MusicLibrary {
 		mp3List = new ArrayList<Mp3>();
 	}
 	
-	private void addSong(Mp3 song) {
-		mp3List.add(song);
+	public void addSong(String filePath) {
+		
+		mp3List.add(new Mp3(filePath));
 	}
 }
