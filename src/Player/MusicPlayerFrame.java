@@ -52,10 +52,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import org.farng.mp3.TagException;
+
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
@@ -67,6 +69,7 @@ public class MusicPlayerFrame extends JFrame {
 	private MusicLibrary library;
 	private ArrayList<Playlist> playlists;
 	private JTable currentPlaylistTable;
+	private JList playlistList;
 	private JLabel lblSelectedPlaylistName;
 	private String[] PlayListColumnNames = new String[] {"Track", "Artist", "Time", "Album"};
 	/**
@@ -199,21 +202,13 @@ public class MusicPlayerFrame extends JFrame {
 				
 				JPanel cdArtPanel = new JPanel();
 				
-				final JList playlistList = new JList();
+				playlistList = new JList();
 				playlistList.addFocusListener(new FocusAdapter() {
 					@Override
 					public void focusGained(FocusEvent arg0) {
 						try {
 	                		lblSelectedPlaylistName.setText(playlistList.getSelectedValue().toString());
-	                		MusicLibrary list = null;
-	                		for(int i = 0; i < playlists.size(); i++){
-	                			if(playlistList.getSelectedValue().toString().equals(playlists.get(i).getName()))
-	                				list = playlists.get(i);		                					
-	                		}
-	           
-	                		if(playlistList.getSelectedValue().toString().equals(library.getName()))
-	                			list = library;
-	                			
+	                		MusicLibrary list = getCurrentList();
 	                		currentPlaylistTable.setModel(new DefaultTableModel(list.getSongListInfo(), PlayListColumnNames));
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
@@ -234,15 +229,7 @@ public class MusicPlayerFrame extends JFrame {
 					public void valueChanged(ListSelectionEvent arg0) {
 		                	try {
 		                		lblSelectedPlaylistName.setText(playlistList.getSelectedValue().toString());
-		                		MusicLibrary list = null;
-		                		for(int i = 0; i < playlists.size(); i++){
-		                			if(playlistList.getSelectedValue().toString().equals(playlists.get(i).getName()))
-		                				list = playlists.get(i);		                					
-		                		}
-		           
-		                		if(playlistList.getSelectedValue().toString().equals(library.getName()))
-		                			list = library;
-		                			
+		                		MusicLibrary list = getCurrentList();
 		                		currentPlaylistTable.setModel(new DefaultTableModel(list.getSongListInfo(), PlayListColumnNames));
 							} catch (IOException e) {
 								// TODO Auto-generated catch block
@@ -392,8 +379,32 @@ public class MusicPlayerFrame extends JFrame {
 	}
 
 	public void playButtonPressed() {
-
-		Mp3 testFile = new Mp3("/Users/alynch/Desktop/test.mp3");
+		MusicLibrary list = getCurrentList();
+		ArrayList<Mp3> songs = list.getMp3List();
+		Object songTitle = currentPlaylistTable.getModel().getValueAt(0, 0);
+		Object songArtist = currentPlaylistTable.getModel().getValueAt(0, 1);
+		Object songAlbum = currentPlaylistTable.getModel().getValueAt(0, 3);
+		String filePath = null;
+		for(int i = 0; i < songs.size(); i++){
+			String[] currSongInfo = null;
+			try {
+				currSongInfo = songs.get(i).parseMetaData();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (TagException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UnsupportedAudioFileException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(currSongInfo[0].equals(songTitle) && currSongInfo[1].equals(songArtist) && currSongInfo[3].equals(songAlbum)){
+				filePath = songs.get(i).getFilePath();
+			}
+				
+		}
+		Mp3 testFile = new Mp3(filePath);
 		MusicHandler.commands.add(new PlayCommand(testFile));
 	}
 
@@ -403,5 +414,17 @@ public class MusicPlayerFrame extends JFrame {
 
 	public void setPlayer(Player player) {
 		this.player = player;
+	}
+	
+	private MusicLibrary getCurrentList(){
+		for(int i = 0; i < playlists.size(); i++){
+			if(playlistList.getSelectedValue().toString().equals(playlists.get(i).getName()))
+				return playlists.get(i);		                					
+		}
+
+		if(playlistList.getSelectedValue().toString().equals(library.getName()))
+			return library;
+		
+		return null;
 	}
 }

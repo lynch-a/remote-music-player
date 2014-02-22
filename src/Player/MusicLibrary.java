@@ -21,6 +21,11 @@ public class MusicLibrary {
 		
 		mp3List.add(new Mp3(filePath));
 	}
+	
+	public ArrayList<Mp3> getMp3List(){
+		return mp3List;
+		
+	}
 	public Object[][] getSongListInfo() throws IOException, TagException, UnsupportedAudioFileException{
 		if(mp3List.size() == 0)
 			return null;
@@ -29,6 +34,7 @@ public class MusicLibrary {
 		for (int i = 0; i < mp3List.size(); i++){
 			data[i] = mp3List.get(i).parseMetaData();
 		}
+		
 		return data;
 	}
 	public String getName(){

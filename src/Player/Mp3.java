@@ -53,4 +53,8 @@ public class Mp3 {
 		seconds %= 60;
 		return new String(minutes + ":" + seconds);
 	}
+
+	public String getFilePath() {
+		return fileLocation;
+	}
 }
