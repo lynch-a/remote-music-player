@@ -11,6 +11,7 @@ import javax.swing.border.EmptyBorder;
 
 import javazoom.jl.player.Player;
 import PlayerCommands.PlayCommand;
+import PlayerCommands.StopCommand;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
@@ -71,7 +72,8 @@ public class MusicPlayerFrame extends JFrame {
 	private JTable currentPlaylistTable;
 	private JList playlistList;
 	private JLabel lblSelectedPlaylistName;
-	private String[] PlayListColumnNames = new String[] {"Track", "Artist", "Time", "Album"};
+	private String[] PlayListColumnNames = new String[] {"ID", "Track", "Artist", "Time", "Album"};
+	private Boolean playingOn = false;
 	/**
 	 * Launch the application.
 	 */
@@ -177,27 +179,21 @@ public class MusicPlayerFrame extends JFrame {
 				
 				currentPlaylistTable = new JTable();
 				scrollPane_1.setViewportView(currentPlaylistTable);
-				
-				try {
-					currentPlaylistTable.setModel(new DefaultTableModel(
+
+				currentPlaylistTable.setModel(new DefaultTableModel(
 						library.getSongListInfo(),
 						PlayListColumnNames
-					));
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (TagException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (UnsupportedAudioFileException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				currentPlaylistTable.getColumnModel().getColumn(0).setPreferredWidth(146);
-				currentPlaylistTable.getColumnModel().getColumn(1).setPreferredWidth(118);
-				currentPlaylistTable.getColumnModel().getColumn(2).setPreferredWidth(43);
-				currentPlaylistTable.getColumnModel().getColumn(3).setPreferredWidth(162);
+				)
+						);
+
+				
+				currentPlaylistTable.getColumnModel().getColumn(1).setPreferredWidth(146);
+				currentPlaylistTable.getColumnModel().getColumn(2).setPreferredWidth(118);
+				currentPlaylistTable.getColumnModel().getColumn(3).setPreferredWidth(43);
+				currentPlaylistTable.getColumnModel().getColumn(4).setPreferredWidth(162);
 				currentPlaylistTable.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
+				//currentPlaylistTable.getColumnModel().removeColumn(currentPlaylistTable.getColumnModel().getColumn(0));
+				currentPlaylistTable.getColumnModel().getColumn(0).setMaxWidth(0);
 				mainContentPanel.setLayout(gl_mainContentPanel);
 				
 				JPanel cdArtPanel = new JPanel();
@@ -206,20 +202,10 @@ public class MusicPlayerFrame extends JFrame {
 				playlistList.addFocusListener(new FocusAdapter() {
 					@Override
 					public void focusGained(FocusEvent arg0) {
-						try {
-	                		lblSelectedPlaylistName.setText(playlistList.getSelectedValue().toString());
-	                		MusicLibrary list = getCurrentList();
-	                		currentPlaylistTable.setModel(new DefaultTableModel(list.getSongListInfo(), PlayListColumnNames));
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (TagException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (UnsupportedAudioFileException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+
+	                	lblSelectedPlaylistName.setText(playlistList.getSelectedValue().toString());
+	                	MusicLibrary list = getCurrentList();
+	                	currentPlaylistTable.setModel(new DefaultTableModel(list.getSongListInfo(), PlayListColumnNames));
 		          
 					}
 				});
@@ -227,21 +213,11 @@ public class MusicPlayerFrame extends JFrame {
 
 					@Override
 					public void valueChanged(ListSelectionEvent arg0) {
-		                	try {
-		                		lblSelectedPlaylistName.setText(playlistList.getSelectedValue().toString());
-		                		MusicLibrary list = getCurrentList();
-		                		currentPlaylistTable.setModel(new DefaultTableModel(list.getSongListInfo(), PlayListColumnNames));
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (TagException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (UnsupportedAudioFileException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-			          }
+
+		                lblSelectedPlaylistName.setText(playlistList.getSelectedValue().toString());
+		                MusicLibrary list = getCurrentList();
+		                currentPlaylistTable.setModel(new DefaultTableModel(list.getSongListInfo(), PlayListColumnNames));
+			        }
 					
 		        });
 				
@@ -381,31 +357,30 @@ public class MusicPlayerFrame extends JFrame {
 	public void playButtonPressed() {
 		MusicLibrary list = getCurrentList();
 		ArrayList<Mp3> songs = list.getMp3List();
-		Object songTitle = currentPlaylistTable.getModel().getValueAt(0, 0);
-		Object songArtist = currentPlaylistTable.getModel().getValueAt(0, 1);
-		Object songAlbum = currentPlaylistTable.getModel().getValueAt(0, 3);
+		Object songId = currentPlaylistTable.getModel().getValueAt(0, 0);
+
 		String filePath = null;
 		for(int i = 0; i < songs.size(); i++){
 			String[] currSongInfo = null;
-			try {
-				currSongInfo = songs.get(i).parseMetaData();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (TagException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (UnsupportedAudioFileException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			if(currSongInfo[0].equals(songTitle) && currSongInfo[1].equals(songArtist) && currSongInfo[3].equals(songAlbum)){
-				filePath = songs.get(i).getFilePath();
+
+			currSongInfo = songs.get(i).parseMetaData();
+
+			if(currSongInfo[0].equals(songId) ){
+				if(playingOn == true){
+					playingOn = false;
+					MusicHandler.commands.add(new StopCommand(songs.get(i)));
+					
+				}
+				else{
+					playingOn = true;
+					MusicHandler.commands.add(new PlayCommand(songs.get(i)));
+					
+				}
 			}
 				
 		}
-		Mp3 testFile = new Mp3(filePath);
-		MusicHandler.commands.add(new PlayCommand(testFile));
+		//Mp3 testFile = new Mp3(filePath);
+		//MusicHandler.commands.add(new PlayCommand(testFile));
 	}
 
 	public Player getPlayer() {
@@ -419,7 +394,7 @@ public class MusicPlayerFrame extends JFrame {
 	private MusicLibrary getCurrentList(){
 		for(int i = 0; i < playlists.size(); i++){
 			if(playlistList.getSelectedValue().toString().equals(playlists.get(i).getName()))
-				return playlists.get(i);		                					
+				return playlists.get(i);
 		}
 
 		if(playlistList.getSelectedValue().toString().equals(library.getName()))

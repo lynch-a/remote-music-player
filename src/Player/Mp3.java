@@ -15,31 +15,52 @@ import org.farng.mp3.id3.ID3v1;
 
 public class Mp3 {
 	private File file;
-
+	private int upvotes;
 	private String title;
-	private String whateverMetaData;
+	private String artist;
+	private String album;
 	private String fileLocation;
-
+	private int songId;
 	int id; // id for playlists/queues
 
-	public Mp3(String filePath) {
+	public Mp3(String filePath, int id) {
 		fileLocation = filePath;
+		try {
+			setMetaData();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TagException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		songId = id;
+		upvotes = 0;
 	}
 
-	public String[] parseMetaData() throws IOException, TagException, UnsupportedAudioFileException {
+	private void setMetaData() throws IOException, TagException {
+		title = null;
+		artist = null;
+		album = null;
 		MP3File mp3file = new MP3File(fileLocation);
 		if (mp3file!=null && mp3file.hasID3v1Tag()) {
 			ID3v1 id3v1Tag = mp3file.getID3v1Tag();
-			System.out.println("Title: " + id3v1Tag.getTitle());
-			System.out.println("Artist: " + id3v1Tag.getArtist());
-			System.out.println("Album: " + id3v1Tag.getAlbum());
 			title = id3v1Tag.getTitle();
-			String[] mp3Info = {id3v1Tag.getTitle(),id3v1Tag.getArtist(),"3:50", id3v1Tag.getAlbum()};
-			return mp3Info;
+			artist = id3v1Tag.getArtist();
+			album = id3v1Tag.getAlbum();
 		}
-		return null;
 	}
 
+	public String[] parseMetaData(){
+		String[] mp3Info = {Integer.toString(songId), title, artist, "3:50", album};
+		return mp3Info;
+
+	}
+
+	public String getIdString(){
+		return Integer.toString(songId);
+	}
+	
 	public File getFile() {
 		return new File(fileLocation);
 	}
@@ -52,6 +73,10 @@ public class Mp3 {
 		int minutes = (int)(seconds/60);
 		seconds %= 60;
 		return new String(minutes + ":" + seconds);
+	}
+	
+	public int getSongId(){
+		return songId;
 	}
 
 	public String getFilePath() {

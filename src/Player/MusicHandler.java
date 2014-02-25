@@ -5,13 +5,13 @@ import java.io.FileNotFoundException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.Player;
+import javazoom.jl.player.advanced.*;
 import PlayerCommands.PlayCommand;
 import PlayerCommands.PlayerCommand;
 import PlayerCommands.StopCommand;
 
 class MusicHandler implements Runnable {
-	private Player player;
+	private AdvancedPlayer player;
 	static public LinkedBlockingQueue<PlayerCommand> commands = new LinkedBlockingQueue<PlayerCommand>();
 
 	private Playlist playlist;
@@ -24,7 +24,7 @@ class MusicHandler implements Runnable {
 		FileInputStream fis     = new FileInputStream(song.getFile());
 		BufferedInputStream bis = new BufferedInputStream(fis);
 
-		player = new Player(bis);
+		player = new AdvancedPlayer(bis);
 		player.play();
 	}
 
@@ -32,12 +32,13 @@ class MusicHandler implements Runnable {
 		if (player != null) {
 			player.close();
 		}
-
+		
 		player = null;
 	}
 
 	public void run() {
 		while (true) {
+			//System.out.println(commands.size());
 			if (commands.size() > 0) {
 				Object command = commands.poll();
 
@@ -52,11 +53,12 @@ class MusicHandler implements Runnable {
 						e.printStackTrace();
 					}
 				} else if (command instanceof StopCommand) {
+					player.stop();
 					stopSong();
 				} 
 			}
 
-			try{ Thread.sleep(50); } catch (Exception e) {}
+			//try{ Thread.sleep(50); } catch (Exception e) {}
 		}
 	}
 }
