@@ -11,8 +11,10 @@ import PlayerCommands.PlayerCommand;
 import PlayerCommands.StopCommand;
 
 class MusicHandler implements Runnable {
-	private AdvancedPlayer player;
+	private static AdvancedPlayer player;
 	static public LinkedBlockingQueue<PlayerCommand> commands = new LinkedBlockingQueue<PlayerCommand>();
+
+	Thread playingThread;
 
 	private Playlist playlist;
 
@@ -29,10 +31,13 @@ class MusicHandler implements Runnable {
 	}
 
 	public void stopSong() {
+		System.out.println("stopSong hit");
+		playingThread.stop();
+		
 		if (player != null) {
 			player.close();
 		}
-		
+
 		player = null;
 	}
 
@@ -44,21 +49,38 @@ class MusicHandler implements Runnable {
 
 				// TODO: pause functionality
 				if (command instanceof PlayCommand) {
-					PlayCommand playCommand = (PlayCommand) command;
 					try {
-						playSong(playCommand.getFileToPlay());
+						final PlayCommand playCommand = (PlayCommand) command;
+
+						playingThread = new Thread() {
+							public void run() {
+								try {
+									playSong(playCommand.getFileToPlay());
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+						};
+
+						playingThread.start();
+						
 					} catch(Exception e) {
 						// file not found or otherwise unable to play? handle me here.
 						stopSong();
 						e.printStackTrace();
 					}
 				} else if (command instanceof StopCommand) {
-					player.stop();
+					System.out.println("stopping playing");
 					stopSong();
 				} 
 			}
 
 			//try{ Thread.sleep(50); } catch (Exception e) {}
 		}
+	}
+
+	public static boolean isPlaying() {
+		System.out.println("playing: " + player!=null);
+		return player != null;
 	}
 }

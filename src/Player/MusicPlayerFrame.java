@@ -356,9 +356,18 @@ public class MusicPlayerFrame extends JFrame {
 
 	public void playButtonPressed() {
 		MusicLibrary list = getCurrentList();
-		ArrayList<Mp3> songs = list.getMp3List();
-		Object songId = currentPlaylistTable.getModel().getValueAt(0, 0);
+		int selectSongId = Integer.parseInt(""+currentPlaylistTable.getModel().getValueAt(0, 0)); // type safety lol
+		
+		if (MusicHandler.isPlaying()) {
+			System.out.println("sending stop command");
+			MusicHandler.commands.add(new StopCommand());
+			//MusicHandler.commands.add(new PlayCommand(list.getMp3ByPlaylistId(selectSongId)));
 
+		} else {
+			MusicHandler.commands.add(new PlayCommand(list.getMp3ByPlaylistId(selectSongId)));
+		}
+		
+		/*
 		String filePath = null;
 		for(int i = 0; i < songs.size(); i++){
 			String[] currSongInfo = null;
@@ -379,6 +388,7 @@ public class MusicPlayerFrame extends JFrame {
 			}
 				
 		}
+		*/
 		//Mp3 testFile = new Mp3(filePath);
 		//MusicHandler.commands.add(new PlayCommand(testFile));
 	}

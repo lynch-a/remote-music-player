@@ -28,6 +28,11 @@ public class MusicLibrary {
 		return mp3List;
 		
 	}
+	
+	public Mp3 getMp3ByPlaylistId(int id) {
+		return mp3List.get(id-1);
+	}
+	
 	public Object[][] getSongListInfo() {
 		if(mp3List.size() == 0)
 			return null;

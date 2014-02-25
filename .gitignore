@@ -4,7 +4,6 @@
 *.class
 
 # Package Files #
-*.jar
 *.war
 *.ear
 >>>>>>> fd1a0732ac5e37a3b712f7e331865158eba22861
