@@ -206,7 +206,7 @@ public class MusicPlayerFrame extends JFrame {
 	                	lblSelectedPlaylistName.setText(playlistList.getSelectedValue().toString());
 	                	MusicLibrary list = getCurrentList();
 	                	currentPlaylistTable.setModel(new DefaultTableModel(list.getSongListInfo(), PlayListColumnNames));
-		          
+	                	currentPlaylistTable.removeColumn(currentPlaylistTable.getColumnModel().getColumn(0));
 					}
 				});
 				playlistList.addListSelectionListener(new ListSelectionListener() {
@@ -217,6 +217,7 @@ public class MusicPlayerFrame extends JFrame {
 		                lblSelectedPlaylistName.setText(playlistList.getSelectedValue().toString());
 		                MusicLibrary list = getCurrentList();
 		                currentPlaylistTable.setModel(new DefaultTableModel(list.getSongListInfo(), PlayListColumnNames));
+		                currentPlaylistTable.removeColumn(currentPlaylistTable.getColumnModel().getColumn(0));
 			        }
 					
 		        });
