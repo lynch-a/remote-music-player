@@ -3,7 +3,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
 
-import javax.media.*;
+//import javax.media.*;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -24,7 +24,7 @@ public class Mp3 {
 	private String fileLocation;
 	private int songId;
 	double duration;
-	int id; // id for playlists/queues
+	//int id; // id for playlists/queues
 
 	public Mp3(String filePath, int id) {
 		fileLocation = filePath;
