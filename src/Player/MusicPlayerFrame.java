@@ -3,6 +3,7 @@ import java.awt.EventQueue;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -10,8 +11,10 @@ import javax.swing.border.EmptyBorder;
 
 import javazoom.jl.player.Player;
 import PlayerCommands.PlayCommand;
+import PlayerCommands.StopCommand;
 
 import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
 import javax.swing.JMenuBar;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -38,21 +41,39 @@ import javax.swing.JSlider;
 import javax.swing.JLabel;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JList;
 import javax.swing.AbstractListModel;
 import javax.swing.JTable;
 
 import java.awt.Font;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+
+import org.farng.mp3.TagException;
+
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 
 public class MusicPlayerFrame extends JFrame {
 
 	private JPanel contentPane;
 	private Player player;
+	private MusicLibrary library;
+	private ArrayList<Playlist> playlists;
 	private JTable currentPlaylistTable;
-
+	private JList playlistList;
+	private JLabel lblSelectedPlaylistName;
+	private String[] PlayListColumnNames = new String[] {"ID", "Track", "Artist", "Time", "Album"};
+	private Boolean playingOn = false;
 	/**
 	 * Launch the application.
 	 */
@@ -75,11 +96,35 @@ public class MusicPlayerFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public MusicPlayerFrame() {
+		library = new MusicLibrary("Library");
+		playlists = new ArrayList<Playlist>();
+		playlists.add(new Playlist("Default Playlist"));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 727, 481);
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
+		
+		JMenu fileMenu = new JMenu("File");
+		fileMenu.setIcon(null);
+		menuBar.add(fileMenu);
+		
+		JMenuItem addSongMenuItem = new JMenuItem("Add Song to Library");
+		addSongMenuItem.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				JFileChooser fileChosen = new JFileChooser();
+				FileNameExtensionFilter mp3filter = new FileNameExtensionFilter("MP3", "mp3");
+				fileChosen.setFileFilter(mp3filter);
+			    int returnVal = fileChosen.showOpenDialog(getParent());
+			    if(returnVal == JFileChooser.APPROVE_OPTION) {
+			       //System.out.println("You chose to open this file: " + fileChosen.getSelectedFile().getAbsolutePath());
+			       library.addSong(fileChosen.getSelectedFile().getAbsolutePath());
+			    }
+			}
+		});
+		fileMenu.add(addSongMenuItem);
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -110,7 +155,7 @@ public class MusicPlayerFrame extends JFrame {
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(bottomContentPanel, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
 				);
-				JLabel lblSelectedPlaylistName = new JLabel("Selected Playlist Name");
+				lblSelectedPlaylistName = new JLabel("Selected Playlist Name");
 				lblSelectedPlaylistName.setFont(new Font("Tahoma", Font.BOLD, 18));
 				
 				JScrollPane scrollPane_1 = new JScrollPane();
@@ -134,28 +179,59 @@ public class MusicPlayerFrame extends JFrame {
 				
 				currentPlaylistTable = new JTable();
 				scrollPane_1.setViewportView(currentPlaylistTable);
-				
+
 				currentPlaylistTable.setModel(new DefaultTableModel(
-					new Object[][] {
-						{"Never gonna give you up", "Rick Astley", "3:32", "Whenever you Need Somebody"},
-					},
-					new String[] {
-						"Track", "Artist", "Time", "Abum"
-					}
-				));
-				currentPlaylistTable.getColumnModel().getColumn(0).setPreferredWidth(146);
-				currentPlaylistTable.getColumnModel().getColumn(1).setPreferredWidth(118);
-				currentPlaylistTable.getColumnModel().getColumn(2).setPreferredWidth(43);
-				currentPlaylistTable.getColumnModel().getColumn(3).setPreferredWidth(162);
+						library.getSongListInfo(),
+						PlayListColumnNames
+				)
+						);
+
+				
+				currentPlaylistTable.getColumnModel().getColumn(1).setPreferredWidth(146);
+				currentPlaylistTable.getColumnModel().getColumn(2).setPreferredWidth(118);
+				currentPlaylistTable.getColumnModel().getColumn(3).setPreferredWidth(43);
+				currentPlaylistTable.getColumnModel().getColumn(4).setPreferredWidth(162);
 				currentPlaylistTable.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
+				//currentPlaylistTable.getColumnModel().removeColumn(currentPlaylistTable.getColumnModel().getColumn(0));
+				currentPlaylistTable.getColumnModel().getColumn(0).setMaxWidth(0);
 				mainContentPanel.setLayout(gl_mainContentPanel);
 				
 				JPanel cdArtPanel = new JPanel();
 				
-				JList playlistList = new JList();
+				playlistList = new JList();
+				playlistList.addFocusListener(new FocusAdapter() {
+					@Override
+					public void focusGained(FocusEvent arg0) {
+
+	                	lblSelectedPlaylistName.setText(playlistList.getSelectedValue().toString());
+	                	MusicLibrary list = getCurrentList();
+	                	currentPlaylistTable.setModel(new DefaultTableModel(list.getSongListInfo(), PlayListColumnNames));
+	                	currentPlaylistTable.removeColumn(currentPlaylistTable.getColumnModel().getColumn(0));
+					}
+				});
+				playlistList.addListSelectionListener(new ListSelectionListener() {
+
+					@Override
+					public void valueChanged(ListSelectionEvent arg0) {
+
+		                lblSelectedPlaylistName.setText(playlistList.getSelectedValue().toString());
+		                MusicLibrary list = getCurrentList();
+		                currentPlaylistTable.setModel(new DefaultTableModel(list.getSongListInfo(), PlayListColumnNames));
+		                currentPlaylistTable.removeColumn(currentPlaylistTable.getColumnModel().getColumn(0));
+			        }
+					
+		        });
+				
+				// Create list of playlists.
+				final String[] values = new String[playlists.size()+1];
+				values[0] = (library.getName());
+				for (int i = 0; i < playlists.size(); i++){
+					values[i+1] = (playlists.get(i).getName());
+				}
+				
 				playlistList.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 				playlistList.setModel(new AbstractListModel() {
-					String[] values = new String[] {"Library", "Queued Songs", "Playlist 1", "Playlist 2", "Playlist n", "Playlist n+1"};
+					
 					public int getSize() {
 						return values.length;
 					}
@@ -163,6 +239,7 @@ public class MusicPlayerFrame extends JFrame {
 						return values[index];
 					}
 				});
+				playlistList.setSelectedIndex(0);
 				GroupLayout gl_sideContentPanel = new GroupLayout(sideContentPanel);
 				gl_sideContentPanel.setHorizontalGroup(
 					gl_sideContentPanel.createParallelGroup(Alignment.LEADING)
@@ -279,8 +356,61 @@ public class MusicPlayerFrame extends JFrame {
 	}
 
 	public void playButtonPressed() {
+		MusicLibrary list = getCurrentList();
+		int selectSongId = Integer.parseInt(""+currentPlaylistTable.getModel().getValueAt(0, 0)); // type safety lol
+		
+		if (MusicHandler.isPlaying()) {
+			System.out.println("sending stop command");
+			MusicHandler.commands.add(new StopCommand());
+			//MusicHandler.commands.add(new PlayCommand(list.getMp3ByPlaylistId(selectSongId)));
 
-		Mp3 testFile = new Mp3("/Users/alynch/Desktop/test.mp3");
-		MusicHandler.commands.add(new PlayCommand(testFile));
+		} else {
+			MusicHandler.commands.add(new PlayCommand(list.getMp3ByPlaylistId(selectSongId)));
+		}
+		
+		/*
+		String filePath = null;
+		for(int i = 0; i < songs.size(); i++){
+			String[] currSongInfo = null;
+
+			currSongInfo = songs.get(i).parseMetaData();
+
+			if(currSongInfo[0].equals(songId) ){
+				if(playingOn == true){
+					playingOn = false;
+					MusicHandler.commands.add(new StopCommand(songs.get(i)));
+					
+				}
+				else{
+					playingOn = true;
+					MusicHandler.commands.add(new PlayCommand(songs.get(i)));
+					
+				}
+			}
+				
+		}
+		*/
+		//Mp3 testFile = new Mp3(filePath);
+		//MusicHandler.commands.add(new PlayCommand(testFile));
+	}
+
+	public Player getPlayer() {
+		return player;
+	}
+
+	public void setPlayer(Player player) {
+		this.player = player;
+	}
+	
+	private MusicLibrary getCurrentList(){
+		for(int i = 0; i < playlists.size(); i++){
+			if(playlistList.getSelectedValue().toString().equals(playlists.get(i).getName()))
+				return playlists.get(i);
+		}
+
+		if(playlistList.getSelectedValue().toString().equals(library.getName()))
+			return library;
+		
+		return null;
 	}
 }

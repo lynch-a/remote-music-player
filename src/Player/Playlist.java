@@ -2,9 +2,12 @@ package Player;
 import java.util.ArrayList;
 
 
-public class Playlist {
-	private ArrayList<Mp3> playlist = new ArrayList<Mp3>();
+public class Playlist extends MusicLibrary{
 	
+	Playlist(String listName) {
+		super(listName);
+	}
+
 	public void addSong(Mp3 song) {
 		
 	}
