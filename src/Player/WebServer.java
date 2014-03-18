@@ -14,12 +14,25 @@ public class WebServer extends NanoHTTPD
 
 	public Response serve( String uri, String method, Properties header, Properties parms, Properties files )
 	{
-		if (uri.substring(1).equals("upvote")) {
-			return handleUpvote();
+		System.out.println("URI: " + uri);
+
+		if (uri.length() > 1) {
+			if (uri.charAt(0) == '/') {
+				uri = uri.substring(1);
+			}
 		} else {
-			return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, "not implemented");
+			return handleIndex();
 		}
-		
+
+		String[] params = uri.split("/");
+		System.out.println("params: " + Arrays.toString(params));
+
+		if (params[0].equals("upvote")) {
+			return handleUpvote(params);
+		} else {
+			return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, "function not implemented");
+		}
+
 		/*
 		System.out.println( method + " '" + uri + "' " );
 		String msg = "<html><body><h1>Hello server</h1>\n";
@@ -33,13 +46,19 @@ public class WebServer extends NanoHTTPD
 
 		msg += "</body></html>\n";
 		return new NanoHTTPD.Response( HTTP_OK, MIME_HTML, msg );
-		*/
+		 */
+	}
+
+	public Response handleIndex() {
+		//ArrayList<Mp3> songList = 
+		return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, "index page");
 	}
 	
-	public Response handleUpvote() {
+	public Response handleUpvote(String[] params) {
+
 		return new NanoHTTPD.Response( HTTP_OK, MIME_HTML, "handle upvote!");
 	}
-	
+
 	public Response handleDownvote() {
 		return new NanoHTTPD.Response( HTTP_OK, MIME_HTML, "handle downvote!");
 	}
