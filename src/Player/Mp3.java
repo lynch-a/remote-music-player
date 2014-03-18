@@ -16,6 +16,11 @@ import org.jaudiotagger.audio.*;
 import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 
 
+/*
+ * Mp3 container class, this fetches and makes easily accessible all the
+ *  metadata contained in the Mp3 or, if not present, sets default properties.
+ * 
+ */
 public class Mp3 {
 	private File file;
 	private String title;
@@ -24,8 +29,16 @@ public class Mp3 {
 	private String fileLocation;
 	private int songId;
 	double duration;
-	//int id; // id for playlists/queues
-
+	
+	
+	/*
+	 * Constructor for the Mp3 class.
+	 * 
+	 * INPUT: a filePath string and a unique integer identifier.
+	 * 
+	 * OUTPUT: it's a constructor, so nope.
+	 * 
+	 */
 	public Mp3(String filePath, int id) {
 		fileLocation = filePath;
 		try {
@@ -40,6 +53,15 @@ public class Mp3 {
 		songId = id;
 	}
 
+	
+	/*
+	 * Retrieves metadata from the Mp3 referenced by the fileLocation variable,
+	 *  sets to default values if there's nothing there.
+	 * 
+	 * INPUT: none.
+	 * 
+	 * OUTPUT: none.
+	 */
 	private void setMetaData() throws IOException, TagException {
 		title = null;
 		artist = null;
@@ -53,20 +75,61 @@ public class Mp3 {
 		}
 	}
 
+	
+	/*
+	 * Parses the Mp3's metadata for use by the rest of the program into a
+	 *  string list.
+	 * 
+	 * INPUT: none.
+	 * 
+	 * OUTPUT: a string list consisting of the songId, title, artist, song
+	 *  length, and album title.
+	 * 
+	 */
 	public String[] parseMetaData(){
 		String[] mp3Info = {Integer.toString(songId), title, artist, getTime(), album};
 		return mp3Info;
 
 	}
 
+	
+	/*
+	 * Returns the songId in string form.
+	 * 
+	 * INPUT: none.
+	 * 
+	 * OUTPUT: this Mp3's songId, as a string.
+	 * 
+	 */
 	public String getIdString(){
 		return Integer.toString(songId);
 	}
 
+	
+	/*
+	 * Returns a file pointer referenced by this Mp3's fileLocation.  If not
+	 *  present, returns a NULL pointer.
+	 * 
+	 * INPUT: none.
+	 * 
+	 * OUTPUT: a new file pointer to the Mp3 (or a NULL pointer).
+	 * 
+	 */
 	public File getFile() {
 		return new File(fileLocation);
 	}
 
+	
+	/*
+	 * Retrieves the song duration from the file and returns a string
+	 *  representation of it while setting the Mp3.duration variable.  If the
+	 *  file fails to open, sets duration to 0.
+	 * 
+	 * INPUT: none.
+	 * 
+	 * OUTPUT: string representation of song duration in the format of MM:SS.
+	 * 
+	 */
 	private String getTime(){
 		duration = 0;
 		try {
@@ -88,11 +151,28 @@ public class Mp3 {
 		else
 			return new String( Integer.toString(minutes) + ":" + Integer.toString(seconds));
 	}
-
+	
+	
+	/*
+	 * Returns the songId variable.
+	 * 
+	 * INPUT: none.
+	 * 
+	 * OUTPUT: none.
+	 * 
+	 */
 	public int getSongId(){
 		return songId;
 	}
 
+	
+	/*
+	 * Returns the fileLocation, in string format.
+	 * 
+	 * INPUT: none.
+	 * 
+	 * OUTPUT: this Mp3's fileLocation.
+	 */
 	public String getFilePath() {
 		return fileLocation;
 	}
