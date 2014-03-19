@@ -1,11 +1,6 @@
 package Player;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.sound.sampled.UnsupportedAudioFileException;
-
-import org.farng.mp3.TagException;
+import java.util.Collections;
 
 
 public class MusicLibrary {
@@ -60,5 +55,10 @@ public class MusicLibrary {
 	
 	public String getName(){
 		return name;
+	}
+	
+	public void sortPlaylist() {
+		Collections.sort(mp3List);
+		
 	}
 }

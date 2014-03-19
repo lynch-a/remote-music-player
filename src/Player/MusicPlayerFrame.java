@@ -33,7 +33,6 @@ import PlayerCommands.StopCommand;
 
 
 public class MusicPlayerFrame extends JFrame {
-
 	private static JPanel contentPane;
 	private static Player player;
 	private static MusicLibrary library;
@@ -97,7 +96,7 @@ public class MusicPlayerFrame extends JFrame {
 				if(returnVal == JFileChooser.APPROVE_OPTION) {
 					//System.out.println("You chose to open this file: " + fileChosen.getSelectedFile().getAbsolutePath());
 					Mp3 mp3 = library.addSong(fileChosen.getSelectedFile().getAbsolutePath());
-					((DefaultTableModel) currentPlaylistTable.getModel()).addRow(mp3.parseMetaData());
+					((DefaultTableModel) currentPlaylistTable.getModel()).addRow(mp3.parseMetaData()); // is this the right way to do this?
 				}
 			}
 		});

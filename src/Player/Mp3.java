@@ -1,19 +1,13 @@
 package Player;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
-
-//import javax.media.*;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.farng.mp3.MP3File;
 import org.farng.mp3.TagException;
 import org.farng.mp3.id3.ID3v1;
-import org.jaudiotagger.audio.*;
+import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.mp3.MP3AudioHeader;
+//import javax.media.*;
 
 
 /*
@@ -21,7 +15,7 @@ import org.jaudiotagger.audio.mp3.MP3AudioHeader;
  *  metadata contained in the Mp3 or, if not present, sets default properties.
  * 
  */
-public class Mp3 {
+public class Mp3 implements Comparable<Mp3> {
 	private File file;
 	private String title;
 	private String artist;
@@ -200,5 +194,17 @@ public class Mp3 {
 	 */
 	public String getFilePath() {
 		return fileLocation;
+	}
+
+	@Override
+	public int compareTo(Mp3 other) {
+		// arbitrarily complicated scoring algorithm
+		int thisDelta = this.getUpvotes() - this.getDownvotes();
+		int otherDelta = other.getUpvotes() - other.getDownvotes();
+		if (thisDelta > otherDelta) {
+			return 1;
+		} else {
+			return -1;
+		}
 	}
 }
