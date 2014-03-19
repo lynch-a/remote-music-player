@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.advanced.*;
+import javazoom.jl.player.advanced.AdvancedPlayer;
 import PlayerCommands.PlayCommand;
 import PlayerCommands.PlayerCommand;
 import PlayerCommands.StopCommand;
@@ -15,8 +15,6 @@ class MusicHandler implements Runnable {
 	static public LinkedBlockingQueue<PlayerCommand> commands = new LinkedBlockingQueue<PlayerCommand>();
 
 	Thread playingThread;
-
-	private Playlist playlist;
 
 	public void playSong(Mp3 song) throws FileNotFoundException, JavaLayerException {
 		if (player != null) {
@@ -75,7 +73,7 @@ class MusicHandler implements Runnable {
 				} 
 			}
 
-			//try{ Thread.sleep(50); } catch (Exception e) {}
+			try{ Thread.sleep(50); } catch (Exception e) {}
 		}
 	}
 

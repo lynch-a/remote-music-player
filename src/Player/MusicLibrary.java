@@ -18,15 +18,28 @@ public class MusicLibrary {
 		mp3List = new ArrayList<Mp3>();
 	}
 
-	public void addSong(String filePath) {
-		
-		mp3List.add(new Mp3(filePath, nextSongId));
+	public Mp3 addSong(String filePath) {
+		Mp3 mp3 = new Mp3(filePath, nextSongId);
+		mp3List.add(mp3);
 		nextSongId++;
+		return mp3;
 	}
 	
 	public ArrayList<Mp3> getMp3List(){
 		return mp3List;
 		
+	}
+	
+	// -1 if not found
+	public int getMp3Row(Mp3 needle) {
+		int i = 0;
+		for (Mp3 haystack : mp3List) {
+			if (haystack == needle) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
 	}
 	
 	public Mp3 getMp3ByPlaylistId(int id) {

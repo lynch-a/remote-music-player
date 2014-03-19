@@ -1,19 +1,19 @@
 package Player;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Properties;
 
 /**
  * An example of subclassing NanoHTTPD to make a custom HTTP server.
  */
-public class WebServer extends NanoHTTPD
-{
-	public WebServer() throws IOException
-	{
+public class WebServer extends NanoHTTPD {
+	public WebServer() throws IOException {
 		super(8080, new File("."));
 	}
 
-	public Response serve( String uri, String method, Properties header, Properties parms, Properties files )
-	{
+	public Response serve( String uri, String method, Properties header, Properties parms, Properties files ) {
 		System.out.println("URI: " + uri);
 
 		if (uri.length() > 1) {
@@ -29,6 +29,8 @@ public class WebServer extends NanoHTTPD
 
 		if (params[0].equals("upvote")) {
 			return handleUpvote(params);
+		} else if (params[0].equals("downvote")) {
+			return handleDownvote(params); 
 		} else {
 			return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, "function not implemented");
 		}
@@ -50,32 +52,43 @@ public class WebServer extends NanoHTTPD
 	}
 
 	public Response handleIndex() {
-		//ArrayList<Mp3> songList = 
-		return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, "index page");
+		MusicLibrary library = MusicPlayerFrame.getCurrentList();
+		ArrayList<Mp3> mp3List = library.getMp3List();
+
+		String response = "";
+
+		for (Mp3 song : mp3List) {
+			response += song.getTitle() + String.format(" id:%d up:%d down:%d ", song.getSongId(), song.getUpvotes(), song.getDownvotes()) +
+					String.format("<a href='/upvote/%d'>Upvote</a> ", song.getSongId()) + 
+					String.format("<a href='/downvote/%d'>Downvote</a> ", song.getSongId()) + "<br/>";
+		}
+
+		return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, "index page!<br/>" + response);
 	}
-	
+
 	public Response handleUpvote(String[] params) {
+		try {
+			int songId = Integer.parseInt(params[1]);
+			System.out.println("Attempting upvote of song id: " + songId);
+			MusicPlayerFrame.doUpvote(songId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new NanoHTTPD.Response( HTTP_OK, MIME_HTML, "Error - invalid song given");
+		}
 
-		return new NanoHTTPD.Response( HTTP_OK, MIME_HTML, "handle upvote!");
+		return new NanoHTTPD.Response( HTTP_OK, MIME_HTML, "Success");
 	}
 
-	public Response handleDownvote() {
-		return new NanoHTTPD.Response( HTTP_OK, MIME_HTML, "handle downvote!");
-	}
-
-
-	public static void main( String[] args )
-	{
-		try
-		{
-			new WebServer();
+	public Response handleDownvote(String[] params) {
+		try {
+			int songId = Integer.parseInt(params[1]);
+			System.out.println("Attempting downvote of song id: " + songId);
+			MusicPlayerFrame.doDownvote(songId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new NanoHTTPD.Response( HTTP_OK, MIME_HTML, "Error - invalid song given");
 		}
-		catch( IOException ioe )
-		{
-			System.err.println( "Couldn't start server:\n" + ioe );
-			System.exit( -1 );
-		}
-		System.out.println( "Listening on port 8080. Hit Enter to stop.\n" );
-		try { System.in.read(); } catch( Throwable t ) {};
+
+		return new NanoHTTPD.Response( HTTP_OK, MIME_HTML, "Success");
 	}
 }

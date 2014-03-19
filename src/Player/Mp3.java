@@ -30,6 +30,9 @@ public class Mp3 {
 	private int songId;
 	double duration;
 	
+	private int upvoteCount = 0;
+	private int downvoteCount = 0;
+	
 	
 	/*
 	 * Constructor for the Mp3 class.
@@ -40,6 +43,7 @@ public class Mp3 {
 	 * 
 	 */
 	public Mp3(String filePath, int id) {
+		file = new File(filePath);
 		fileLocation = filePath;
 		try {
 			setMetaData();
@@ -52,8 +56,26 @@ public class Mp3 {
 		}
 		songId = id;
 	}
-
 	
+	public void addUpvote() {
+		upvoteCount++;
+	}
+	
+	public void addDownvote() {
+		downvoteCount++;
+	}
+
+	public int getUpvotes() {
+		return upvoteCount;
+	}
+	
+	public int getDownvotes() {
+		return downvoteCount;
+	}
+	
+	public String getTitle() {
+		return title;
+	}
 	/*
 	 * Retrieves metadata from the Mp3 referenced by the fileLocation variable,
 	 *  sets to default values if there's nothing there.
@@ -70,6 +92,9 @@ public class Mp3 {
 		if (mp3file!=null && mp3file.hasID3v1Tag()) {
 			ID3v1 id3v1Tag = mp3file.getID3v1Tag();
 			title = id3v1Tag.getTitle();
+			if (title.equals("")) {
+				title = file.getName().replace(".mp3", "");
+			}
 			artist = id3v1Tag.getArtist();
 			album = id3v1Tag.getAlbum();
 		}
@@ -87,7 +112,7 @@ public class Mp3 {
 	 * 
 	 */
 	public String[] parseMetaData(){
-		String[] mp3Info = {Integer.toString(songId), title, artist, getTime(), album};
+		String[] mp3Info = {Integer.toString(songId), title, artist, getTime(), album, ""+getUpvotes(), ""+getDownvotes()};
 		return mp3Info;
 
 	}
