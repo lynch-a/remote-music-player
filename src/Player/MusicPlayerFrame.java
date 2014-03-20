@@ -4,6 +4,8 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -33,6 +35,8 @@ import PlayerCommands.StopCommand;
 
 
 public class MusicPlayerFrame extends JFrame {
+	private static final long serialVersionUID = 1L;
+	
 	private static JPanel contentPane;
 	private static Player player;
 	private static MusicLibrary library;
@@ -44,6 +48,12 @@ public class MusicPlayerFrame extends JFrame {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		System.setErr(new PrintStream(new OutputStream() {
+			public void write(int b) {
+				//DO NOTHING
+			}
+		}));
+
 		// spin up web server
 		new Thread() {
 			public void run() {
@@ -54,7 +64,7 @@ public class MusicPlayerFrame extends JFrame {
 				}
 			}
 		}.start();
-		
+
 		new Thread(new MusicHandler()).start(); // start thread that handles commands and playing the songs
 
 		// start UI thread
@@ -177,15 +187,15 @@ public class MusicPlayerFrame extends JFrame {
 
 		GroupLayout gl_sideContentPanel = new GroupLayout(sideContentPanel);
 		gl_sideContentPanel.setHorizontalGroup(
-			gl_sideContentPanel.createParallelGroup(Alignment.LEADING)
+				gl_sideContentPanel.createParallelGroup(Alignment.LEADING)
 				.addComponent(cdArtPanel, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
-		);
+				);
 		gl_sideContentPanel.setVerticalGroup(
-			gl_sideContentPanel.createParallelGroup(Alignment.TRAILING)
+				gl_sideContentPanel.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_sideContentPanel.createSequentialGroup()
-					.addContainerGap(245, Short.MAX_VALUE)
-					.addComponent(cdArtPanel, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE))
-		);
+						.addContainerGap(245, Short.MAX_VALUE)
+						.addComponent(cdArtPanel, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE))
+				);
 		sideContentPanel.setLayout(gl_sideContentPanel);
 
 		JPanel playbackControlPanel = new JPanel();
@@ -332,7 +342,7 @@ public class MusicPlayerFrame extends JFrame {
 		//Mp3 testFile = new Mp3(filePath);
 		//MusicHandler.commands.add(new PlayCommand(testFile));
 	}
-	
+
 	public Player getPlayer() {
 		return player;
 	}
@@ -345,20 +355,41 @@ public class MusicPlayerFrame extends JFrame {
 	public static MusicLibrary getCurrentList() {
 		return library;
 	}
-	
+
 	public static void doUpvote(int songId) {
 		Mp3 mp3 = library.getMp3ByPlaylistId(songId);
 		mp3.addUpvote();
+
 		int row = library.getMp3Row(mp3);
+
 		currentPlaylistTable.getModel().setValueAt(mp3.getUpvotes(), row, 5);
 		System.out.println("Upvoted song of ID: " + songId);
+
+		redrawTable();
 	}
-	
+
+	public static void redrawTable() {
+		// clear the table
+		int rowCount = currentPlaylistTable.getRowCount();
+		for (int i = 0; i < rowCount; i++)  {
+			((DefaultTableModel) currentPlaylistTable.getModel()).removeRow(0);
+		}
+
+		library.sortPlaylist();
+
+		// recreate the table based on newly sorted playlist
+		for (int i = 0; i < library.getMp3List().size(); i++) {
+			((DefaultTableModel) currentPlaylistTable.getModel()).addRow(library.getMp3List().get(i).parseMetaData());
+		}
+	}
+
 	public static void doDownvote(int songId) {
 		Mp3 mp3 = library.getMp3ByPlaylistId(songId);
 		mp3.addDownvote();
 		int row = library.getMp3Row(mp3);
 		currentPlaylistTable.getModel().setValueAt(mp3.getDownvotes(), row, 6);
 		System.out.println("Upvoted song of ID: " + songId);
+		
+		redrawTable();
 	}
 }

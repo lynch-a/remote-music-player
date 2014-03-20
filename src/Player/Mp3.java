@@ -201,7 +201,8 @@ public class Mp3 implements Comparable<Mp3> {
 		// arbitrarily complicated scoring algorithm
 		int thisDelta = this.getUpvotes() - this.getDownvotes();
 		int otherDelta = other.getUpvotes() - other.getDownvotes();
-		if (thisDelta > otherDelta) {
+		
+		if (thisDelta < otherDelta) {
 			return 1;
 		} else {
 			return -1;
