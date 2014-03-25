@@ -361,7 +361,7 @@ public class MusicPlayerFrame extends JFrame {
 		int row = library.getMp3Row(mp3);
 		currentPlaylistTable.getModel().setValueAt(mp3.getDownvotes(), row, 6);
 		System.out.println("Upvoted song of ID: " + songId);
-		return mp3.getDownvotes();
+		return mp3.getDownvotes(); 
 	}
 
 
