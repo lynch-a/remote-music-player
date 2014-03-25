@@ -346,19 +346,23 @@ public class MusicPlayerFrame extends JFrame {
 		return library;
 	}
 	
-	public static void doUpvote(int songId) {
+	public static int doUpvote(int songId) {
 		Mp3 mp3 = library.getMp3ByPlaylistId(songId);
 		mp3.addUpvote();
 		int row = library.getMp3Row(mp3);
 		currentPlaylistTable.getModel().setValueAt(mp3.getUpvotes(), row, 5);
 		System.out.println("Upvoted song of ID: " + songId);
+		return mp3.getUpvotes();
 	}
 	
-	public static void doDownvote(int songId) {
+	public static int doDownvote(int songId) {
 		Mp3 mp3 = library.getMp3ByPlaylistId(songId);
 		mp3.addDownvote();
 		int row = library.getMp3Row(mp3);
 		currentPlaylistTable.getModel().setValueAt(mp3.getDownvotes(), row, 6);
 		System.out.println("Upvoted song of ID: " + songId);
+		return mp3.getDownvotes();
 	}
+
+
 }
