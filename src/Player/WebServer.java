@@ -81,8 +81,8 @@ public class WebServer extends NanoHTTPD {
 								"<td>" + String.format("<span class=upvotecount%d>", song.getSongId())  + song.getUpvotes() + "</span></td>" +
 								"<td>" + String.format("<span class=downvotecount%d>", song.getSongId()) + song.getDownvotes() + "</td>" +
 								"<td>" + song.getTitle() + "</td>" +
-								"<td>" + String.format("<button id='upvote' value=%d>Upvote</button>", song.getSongId()) + "</td>" +
-								"<td>" + String.format("<button id='downvote' value=%d>Downvote</button>", song.getSongId()) + "</td>" +
+								"<td>" + String.format("<button class='upvote' value=%d>Upvote</button>", song.getSongId()) + "</td>" +
+								"<td>" + String.format("<button class='downvote' value=%d>Downvote</button>", song.getSongId()) + "</td>" +
 							"</tr>";
 
 			}

@@ -4,7 +4,7 @@
 		
 		<script>
 		$( document ).ready(function() {
-			$("#upvote").click(function() {
+			$(".upvote").click(function() {
 			  //alert('upvote');
 			  var id = this;
 			  var jqxhr = $.ajax( "upvote/" + $(this).val() )
@@ -19,7 +19,7 @@
 			  });
 			});
 			
-			$("#downvote").click(function() {
+			$(".downvote").click(function() {
 			  //alert('upvote');
 			  var id = this;
 			  var jqxhr = $.ajax( "downvote/" +  $(this).val())
