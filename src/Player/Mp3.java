@@ -106,11 +106,15 @@ public class Mp3 implements Comparable<Mp3> {
 	 * 
 	 */
 	public String[] parseMetaData(){
-		String[] mp3Info = {Integer.toString(songId), title, artist, getTime(), album, ""+getUpvotes(), ""+getDownvotes()};
+		String[] mp3Info = {Integer.toString(songId), title, artist, getTime(), album, ""+getUpvotes()};
 		return mp3Info;
 
 	}
 
+	public String[] getWebData(){
+		String[] mp3Info = {title, artist,""+getUpvotes()};
+		return mp3Info;
+	}
 	
 	/*
 	 * Returns the songId in string form.
