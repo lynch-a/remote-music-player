@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -105,7 +106,7 @@ public class MusicPlayerFrame extends JFrame {
 					//System.out.println("You chose to open this file: " + filesChosen.getSelectedFile().getAbsolutePath());
 					for (File i : mp3s){
 						Mp3 mp3 = library.addSong(i.getAbsolutePath());
-						((DefaultTableModel) currentPlaylistTable.getModel()).addRow(mp3.parseMetaData()); // is this the right way to do this?
+						((DefaultTableModel) currentPlaylistTable.getModel()).addRow(mp3.parseMetaData()); // is this the right way to do this? Yes
 					}
 				}
 			}
@@ -291,7 +292,8 @@ public class MusicPlayerFrame extends JFrame {
 			JOptionPane.showMessageDialog(contentPane, "You do not have any songs in your library.\nPlease add a song to the library.", "Empty Library", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		int selectSongId = Integer.parseInt(""+currentPlaylistTable.getModel().getValueAt(0, 0)); // type safety lol
+		
+		int selectSongId = Integer.parseInt(""+currentPlaylistTable.getModel().getValueAt(0, 0));
 
 		System.out.println("selectSongId: " + selectSongId);
 
@@ -302,8 +304,19 @@ public class MusicPlayerFrame extends JFrame {
 			//MusicHandler.commands.add(new PlayCommand(list.getMp3ByPlaylistId(selectSongId)));
 
 		} else {
-			MusicHandler.commands.add(new PlayCommand(list.getMp3ByPlaylistId(selectSongId)));
-			currentlyPlaying = list.getMp3ByPlaylistId(selectSongId).getTitle();
+			Mp3 selectSong = list.getMp3ById(selectSongId);
+			if(!selectSong.getFile().exists()){
+				String message = selectSong.getTitle() + "could not be found.\n" +
+						"This song will now be removed from the library.";
+				JOptionPane.showMessageDialog(contentPane, message, "Could not locate mp3 file", JOptionPane.ERROR_MESSAGE);
+				((DefaultTableModel) currentPlaylistTable.getModel()).removeRow(0);
+				list.getMp3List().remove(selectSong);
+				//list.printMp3List();
+			}
+			else{
+				MusicHandler.commands.add(new PlayCommand(list.getMp3ById(selectSongId)));
+				currentlyPlaying = list.getMp3ById(selectSongId).getTitle();
+			}
 		}
 	}
 	
@@ -318,8 +331,9 @@ public class MusicPlayerFrame extends JFrame {
 	public static String getCurrentlyPlaying(){
 		return currentlyPlaying;
 	}
+	
 	public static int doUpvote(int songId) {
-		Mp3 mp3 = library.getMp3ByPlaylistId(songId);
+		Mp3 mp3 = library.getMp3ById(songId);
 		mp3.addUpvote();
 		int row = library.getMp3Row(mp3);
 		currentPlaylistTable.getModel().setValueAt(mp3.getUpvotes(), row, 5);
@@ -328,7 +342,7 @@ public class MusicPlayerFrame extends JFrame {
 	}
 	
 	public static int doDownvote(int songId) {
-		Mp3 mp3 = library.getMp3ByPlaylistId(songId);
+		Mp3 mp3 = library.getMp3ById(songId);
 		mp3.addDownvote();
 		int row = library.getMp3Row(mp3);
 		currentPlaylistTable.getModel().setValueAt(mp3.getDownvotes(), row, 6);

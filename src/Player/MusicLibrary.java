@@ -37,8 +37,11 @@ public class MusicLibrary {
 		return -1;
 	}
 	
-	public Mp3 getMp3ByPlaylistId(int id) {
-		return mp3List.get(id-1);
+	public Mp3 getMp3ById(int id) {
+		for(Mp3 item : mp3List)
+			if(item.getSongId() == id)
+				return item;
+		return null;
 	}
 	
 	public Object[][] getSongListInfo() {
@@ -59,6 +62,13 @@ public class MusicLibrary {
 	
 	public void sortPlaylist() {
 		Collections.sort(mp3List);
+		
+	}
+
+	// Used to check mp3 list is what it should be
+	public void printMp3List() {
+		for(Mp3 item : mp3List)
+			System.out.println(item.getTitle());
 		
 	}
 }
