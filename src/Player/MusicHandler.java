@@ -13,6 +13,7 @@ import PlayerCommands.PauseCommand;
 import PlayerCommands.PlayCommand;
 import PlayerCommands.PlayerCommand;
 import PlayerCommands.ResumeCommand;
+import PlayerCommands.StopCommand;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.AudioDevice;
 import javazoom.jl.player.Player;
@@ -55,6 +56,7 @@ public class MusicHandler implements Runnable {
 	                    final Runnable r = new Runnable() {
 	                        public void run() {
 	                            playInternal();
+	                            MusicPlayerFrame.playNextSong();
 	                        }
 	                    };
 	                    final Thread t = new Thread(r);
@@ -138,11 +140,11 @@ public class MusicHandler implements Runnable {
 	        synchronized (playerLock) {
 	            playerStatus = FINISHED;
 	        }
-	        try {
-	            player.close();
-	        } catch (final Exception e) {
+	        //try {
+	            //player.close();
+	        //} catch (final Exception e) {
 	            // ignore, we are terminating anyway
-	        }
+	       // }
 	    }
 
 		public void run() {
@@ -163,14 +165,16 @@ public class MusicHandler implements Runnable {
 							e.printStackTrace();
 						}
 					}
-					else if (command instanceof PauseCommand) {
+					else if (command instanceof PauseCommand)
 						this.pause();
-					}
-					else if(command instanceof ResumeCommand){
+					else if(command instanceof ResumeCommand)
 						this.resume();
+					else if(command instanceof StopCommand){
+						this.stop();
 					}
-					System.out.println(playerStatus);
+					
 				}
+				
 			}
 		}
 	    // demo how to use
@@ -178,6 +182,7 @@ public class MusicHandler implements Runnable {
 	        try {
 	            FileInputStream input = new FileInputStream(song.getFilePath()); 
 	            this.player = new Player(input);
+	            playerStatus = NOTSTARTED;
 
 	            // start playing
 	            this.play();

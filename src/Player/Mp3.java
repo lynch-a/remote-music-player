@@ -211,4 +211,9 @@ public class Mp3 implements Comparable<Mp3> {
 			return -1;
 		}
 	}
+
+	public void resetUpvoteCount() {
+		upvoteCount = 0;
+		
+	}
 }

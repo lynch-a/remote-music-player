@@ -50,7 +50,7 @@ public class MusicPlayerFrame extends JFrame {
 	private boolean paused = false;
 	private static MusicHandler handler = new MusicHandler();
 	private static String currentlyPlaying = " ";
-	private final JButton btnPlay;
+	private static JButton btnPlay;
 	/**
 	 * Launch the application.
 	 */
@@ -254,7 +254,17 @@ public class MusicPlayerFrame extends JFrame {
 		});
 
 		JButton btnNext = new JButton(">>");
-
+		
+		btnNext.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if(handler.getPlayerStatus() == 1){
+					handler.commands.add(new StopCommand());
+				}
+			}
+		});
+		
+		
 		JSlider volumeSlider = new JSlider();
 		GroupLayout gl_playbackControlPanel = new GroupLayout(playbackControlPanel);
 		gl_playbackControlPanel.setHorizontalGroup(
@@ -289,7 +299,7 @@ public class MusicPlayerFrame extends JFrame {
 		contentPane.setLayout(gl_contentPane);
 	}
 
-	public void playButtonPressed() {
+	public static void playButtonPressed() {
 		MusicLibrary list = library;
 		if (currentPlaylistTable.getModel().getRowCount() == 0) {
 			JOptionPane.showMessageDialog(contentPane, "You do not have any songs in your library.\nPlease add a song to the library.", "Empty Library", JOptionPane.ERROR_MESSAGE);
@@ -309,7 +319,7 @@ public class MusicPlayerFrame extends JFrame {
 		} else {
 			Mp3 selectSong = list.getMp3ById(selectSongId);
 			if(!selectSong.getFile().exists()){
-				String message = selectSong.getTitle() + "could not be found.\n" +
+				String message = selectSong.getTitle() + " could not be found.\n" +
 						"This song will now be removed from the library.";
 				JOptionPane.showMessageDialog(contentPane, message, "Could not locate mp3 file", JOptionPane.ERROR_MESSAGE);
 				((DefaultTableModel) currentPlaylistTable.getModel()).removeRow(0);
@@ -319,8 +329,7 @@ public class MusicPlayerFrame extends JFrame {
 			else{
 				if(handler.getPlayerStatus() == 2){
 					handler.commands.add(new ResumeCommand());
-					paused = false;
-				}else if(handler.getPlayerStatus() == 0){
+				}else if(handler.getPlayerStatus() == 0 || handler.getPlayerStatus() == 3){
 					handler.commands.add(new PlayCommand(list.getMp3ById(selectSongId)));
 					currentlyPlaying = list.getMp3ById(selectSongId).getTitle();
 				}
@@ -370,6 +379,15 @@ public class MusicPlayerFrame extends JFrame {
 
 	public static MusicLibrary getLibrary() {
 		return library;
+	}
+
+	public static void playNextSong() {
+		int selectSongId = Integer.parseInt(""+currentPlaylistTable.getModel().getValueAt(0, 0));
+		Mp3 mp3 = library.getMp3ById(selectSongId);
+		mp3.resetUpvoteCount();
+		currentPlaylistTable.getModel().setValueAt(0, library.getMp3Row(mp3), 5);
+		System.out.println("selectSongId: " + selectSongId);
+		playButtonPressed();
 	}
 
 }
