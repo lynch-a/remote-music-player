@@ -7,7 +7,6 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.file.Files;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -34,7 +33,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 import javazoom.jl.player.Player;
+import PlayerCommands.PauseCommand;
 import PlayerCommands.PlayCommand;
+import PlayerCommands.ResumeCommand;
 import PlayerCommands.StopCommand;
 
 
@@ -46,7 +47,10 @@ public class MusicPlayerFrame extends JFrame {
 	private JTextField lblSelectedPlaylistName;
 	private JTextField lblSelectedPlaylistName_1;
 	private String[] PlayListColumnNames = new String[] {"ID", "Track", "Artist", "Time", "Album", "Votes"};
+	private boolean paused = false;
+	private static MusicHandler handler = new MusicHandler();
 	private static String currentlyPlaying = " ";
+	private final JButton btnPlay;
 	/**
 	 * Launch the application.
 	 */
@@ -61,8 +65,7 @@ public class MusicPlayerFrame extends JFrame {
 				}
 			}
 		}.start();
-		
-		new Thread(new MusicHandler()).start(); // start thread that handles commands and playing the songs
+		new Thread(handler).start(); // start thread that handles commands and playing the songs
 
 		// start UI thread
 		EventQueue.invokeLater(new Runnable() {
@@ -242,7 +245,7 @@ public class MusicPlayerFrame extends JFrame {
 
 		JButton btnPrevious = new JButton("<<");
 
-		JButton btnPlay = new JButton(">");
+		btnPlay = new JButton(">");
 		btnPlay.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -297,10 +300,10 @@ public class MusicPlayerFrame extends JFrame {
 
 		System.out.println("selectSongId: " + selectSongId);
 
-		if (MusicHandler.isPlaying()) {
-			System.out.println("sending stop command");
-			MusicHandler.commands.add(new StopCommand());
-			currentlyPlaying = " ";
+		if (handler.getPlayerStatus() == 1) {
+			System.out.println("sending pause command");
+			handler.commands.add(new PauseCommand());
+			btnPlay.setText(">");
 			//MusicHandler.commands.add(new PlayCommand(list.getMp3ByPlaylistId(selectSongId)));
 
 		} else {
@@ -314,10 +317,21 @@ public class MusicPlayerFrame extends JFrame {
 				//list.printMp3List();
 			}
 			else{
-				MusicHandler.commands.add(new PlayCommand(list.getMp3ById(selectSongId)));
-				currentlyPlaying = list.getMp3ById(selectSongId).getTitle();
+				if(handler.getPlayerStatus() == 2){
+					handler.commands.add(new ResumeCommand());
+					paused = false;
+				}else if(handler.getPlayerStatus() == 0){
+					handler.commands.add(new PlayCommand(list.getMp3ById(selectSongId)));
+					currentlyPlaying = list.getMp3ById(selectSongId).getTitle();
+				}
+				btnPlay.setText("| |");
 			}
 		}
+	}
+	
+	public void pauseButtonPressed() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	public Player getPlayer() {
@@ -329,7 +343,11 @@ public class MusicPlayerFrame extends JFrame {
 	}
 	
 	public static String getCurrentlyPlaying(){
-		return currentlyPlaying;
+		if(handler.getPlayerStatus() == 1){
+			return currentlyPlaying;
+		}
+		else
+			return " ";
 	}
 	
 	public static int doUpvote(int songId) {
