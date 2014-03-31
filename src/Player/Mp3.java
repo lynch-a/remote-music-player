@@ -10,9 +10,9 @@ import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 //import javax.media.*;
 
 
-/*
+/***
  * Mp3 container class, this fetches and makes easily accessible all the
- *  metadata contained in the Mp3 or, if not present, sets default properties.
+ * metadata contained in the Mp3 or, if not present, sets default properties.
  * 
  */
 public class Mp3 implements Comparable<Mp3> {
