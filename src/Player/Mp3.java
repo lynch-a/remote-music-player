@@ -61,6 +61,8 @@ public class Mp3 implements Comparable<Mp3> {
 	 */
 	public Mp3(String filePath, int id) {
 		fileLocation = filePath;
+		// Setting a default value for the filename
+		title = clipFileName();
 		try {
 			setMetaData();
 		} catch (IOException e) {
