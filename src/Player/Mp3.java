@@ -13,9 +13,11 @@ import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 /***
  * Mp3 container class, this fetches and makes easily accessible all the
  * metadata contained in the Mp3 or, if not present, sets default properties.
- * 
  */
 public class Mp3 implements Comparable<Mp3> {
+	/**
+	 * File pointer to the mp3 file on disk.
+	 */
 	private File file;
 	private String title;
 	private String artist;
@@ -28,13 +30,11 @@ public class Mp3 implements Comparable<Mp3> {
 	private int downvoteCount = 0;
 	
 	
-	/*
+	/**
 	 * Constructor for the Mp3 class.
 	 * 
-	 * INPUT: a filePath string and a unique integer identifier.
-	 * 
-	 * OUTPUT: it's a constructor, so nope.
-	 * 
+	 * @param filePath A string representation of the file location.
+	 * @param id Unique integer identifier for this Mp3.
 	 */
 	public Mp3(String filePath, int id) {
 		file = new File(filePath);
