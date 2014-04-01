@@ -12,4 +12,5 @@ public class PlayCommand implements PlayerCommand {
 	public Mp3 getFileToPlay() {
 		return fileToPlay;
 	}
+	
 }

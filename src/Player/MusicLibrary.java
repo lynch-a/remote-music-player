@@ -7,7 +7,6 @@ public class MusicLibrary {
 	private String name;
 	private ArrayList<Mp3> mp3List;
 	private int nextSongId;
-	
 	public MusicLibrary(String listName) {
 		name = listName;
 		nextSongId = 1;
@@ -18,13 +17,12 @@ public class MusicLibrary {
 		Mp3 mp3 = new Mp3(filePath, nextSongId);
 		mp3List.add(mp3);
 		nextSongId++;
-		
-		sortPlaylist();
 		return mp3;
 	}
 	
 	public ArrayList<Mp3> getMp3List(){
 		return mp3List;
+		
 	}
 	
 	// -1 if not found
@@ -39,14 +37,10 @@ public class MusicLibrary {
 		return -1;
 	}
 	
-	public Mp3 getMp3ByPlaylistId(int id) {
-		int i = 0;
-		for (Mp3 mp3 : mp3List) {
-			if (mp3.getSongId() == id) {
-				return mp3;
-			}
-			i++;
-		}
+	public Mp3 getMp3ById(int id) {
+		for(Mp3 item : mp3List)
+			if(item.getSongId() == id)
+				return item;
 		return null;
 	}
 	
@@ -68,5 +62,13 @@ public class MusicLibrary {
 	
 	public void sortPlaylist() {
 		Collections.sort(mp3List);
+		
+	}
+
+	// Used to check mp3 list is what it should be
+	public void printMp3List() {
+		for(Mp3 item : mp3List)
+			System.out.println(item.getTitle());
+		
 	}
 }
