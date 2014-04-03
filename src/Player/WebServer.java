@@ -31,9 +31,9 @@ public class WebServer extends NanoHTTPD {
 		if (params[0].equals("upvote")) {
 			handleUpvote(params);
 			return handleIndex();
-		} else if (params[0].equals("downvote")) {
+		} /*else if (params[0].equals("downvote")) {
 			return handleDownvote(params); 
-		} else {
+		}*/ else {
 			return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, "function not implemented");
 		}
 
@@ -89,10 +89,10 @@ public class WebServer extends NanoHTTPD {
 		
 		try {
 			response = new Scanner(new File("web\\index.html")).useDelimiter("\\Z").next();
-			
+			Mp3 playing = MusicPlayerFrame.getCurrentlyPlaying();
 			
 			// Replace placeholder values with dynamic data from the application
-			String songlist = "<h1>Currently Playing: " + MusicPlayerFrame.getCurrentlyPlaying() + "</h1>" 
+			String songlist = "<h1>Currently Playing: " + MusicPlayerFrame.getCurrentlyPlayingTitle() + "</h1>" 
 					+ "<table class='gridtable'>" +
 						"<tr>" +
 							"<th>Title</th>" +
@@ -101,12 +101,14 @@ public class WebServer extends NanoHTTPD {
 							"<th></th>" +
 						"</tr>";
 			for (Mp3 song : mp3List) {
+				if(song != playing){
 				String[] data = song.getWebData();
 				songlist += "<tr>";
 				for(int i = 0; i < data.length; i++)
 					songlist += "<td>" + data[i] + "</td>";
 				songlist += "<td>" + String.format("<button class='upvote' value=%d>Upvote</button>", song.getSongId()) + "</td>"
 						+ "</tr>";
+				}
 			}
 			songlist += "</table>";
 				
@@ -190,7 +192,7 @@ public class WebServer extends NanoHTTPD {
 		
 		return new NanoHTTPD.Response( HTTP_OK, MIME_HTML, Integer.toString(upvoteCount));
 	}
-
+	/*
 	public Response handleDownvote(String[] params) {
 		int downvoteCount;
 		try {
@@ -203,5 +205,5 @@ public class WebServer extends NanoHTTPD {
 		}
 
 		return new NanoHTTPD.Response( HTTP_OK, MIME_HTML, Integer.toString(downvoteCount));
-	}
+	}*/
 }

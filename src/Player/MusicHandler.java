@@ -4,12 +4,10 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.concurrent.LinkedBlockingQueue;
 
-/* Is this needed? No?
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
-*/
 
 import PlayerCommands.PauseCommand;
 import PlayerCommands.PlayCommand;
@@ -20,30 +18,30 @@ import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.AudioDevice;
 import javazoom.jl.player.Player;
 
-
 /**
  * MusicHandler class, this launches and controls a thread that acts as the main
  * music player.
  */
 public class MusicHandler implements Runnable {
+
 	/**
-	 * 
+	 *
 	 */
     private final static int NOTSTARTED = 0;
     /**
-     * 
+     *
      */
     private final static int PLAYING = 1;
     /**
-     * 
+     *
      */
     private final static int PAUSED = 2;
     /**
-     * 
+     *
      */
     private final static int FINISHED = 3;
     /**
-     * 
+     *
      */
 	static public LinkedBlockingQueue<PlayerCommand> commands = new LinkedBlockingQueue<PlayerCommand>();
 	/**
@@ -57,181 +55,169 @@ public class MusicHandler implements Runnable {
     /**
      * Status variable describing what the player thread is doing/supposed to
      * do.
-     */
-    private int playerStatus;
+        */
+        private int playerStatus;
 
-    
-    /**
-     * Constructor, sets the playerStatus to NOTSTARTED.
-     */
-    public MusicHandler(){
-    	playerStatus = NOTSTARTED;
-    }
-    
-    
-    /**
-     * Constructor, starts the player playing the passed InputStream.
-     * @param inputStream InputStream of playable shit.
-     * @throws JavaLayerException Oh no!
-     */
-    public MusicHandler(final InputStream inputStream) throws JavaLayerException {
-        this.player = new Player(inputStream);
-    }
-    
-    
-    /*
-    public AudioHandler(final InputStream inputStream, final AudioDevice audioDevice) throws JavaLayerException {
-        this.player = new Player(inputStream, audioDevice);
-    }*/
+        /**
+        * Constructor, sets the playerStatus to NOTSTARTED.
+        */
+	    public MusicHandler(){
+	    	playerStatus = NOTSTARTED;
+	    }
 
-    
-    /**
-     * Starts playback (resumes if paused).
-     * @throws JavaLayerException FUUUUUUUUUUUUUU
-     */
-    public void play() throws JavaLayerException {
-        synchronized (playerLock) {
-            switch (playerStatus) {
-                case NOTSTARTED:
-                    final Runnable r = new Runnable() {
-                        public void run() {
-                            playInternal();
-                            MusicPlayerFrame.playNextSong();
-                        }
-                    };
-                    final Thread t = new Thread(r);
-                    t.setDaemon(true);
-                    t.setPriority(Thread.MAX_PRIORITY);
-                    playerStatus = PLAYING;
-                    t.start();
-                    break;
-                case PAUSED:
-                    resume();
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
+        /**
+        * Constructor, starts the player playing the passed InputStream.
+        * @param inputStream InputStream of playable shit.
+        * @throws JavaLayerException Oh no!
+        */
+	    public MusicHandler(final InputStream inputStream) throws JavaLayerException {
+	        this.player = new Player(inputStream);
+	    }
 
-    /**
-     * Pauses playback. Returns true if new state is PAUSED.
-     * @return True if the new state is PAUSED, False if something got boned up.
-     */
-    public boolean pause() {
-        synchronized (playerLock) {
-            if (playerStatus == PLAYING) {
-                playerStatus = PAUSED;
-            }
-            return playerStatus == PAUSED;
-        }
-    }
+        /**
+        * Starts playback (resumes if paused).
+        * @throws JavaLayerException FUUUUUUUUUUUUUU
+        */
+	    public void play() throws JavaLayerException {
+	        synchronized (playerLock) {
+	            switch (playerStatus) {
+	                case NOTSTARTED:
+	                    final Runnable r = new Runnable() {
+	                        public void run() {
+	                            playInternal();
+	                            MusicPlayerFrame.playNextSong();
+	                        }
+	                    };
+	                    final Thread t = new Thread(r);
+	                    t.setDaemon(true);
+	                    t.setPriority(Thread.MAX_PRIORITY);
+	                    playerStatus = PLAYING;
+	                    t.start();
+	                    break;
+	                case PAUSED:
+	                    resume();
+	                    break;
+	                default:
+	                    break;
+	            }
+	        }
+	    }
 
-    /**
-     * Resumes playback. Returns true if the new state is PLAYING.
-     */
-    public boolean resume() {
-        synchronized (playerLock) {
-            if (playerStatus == PAUSED) {
-                playerStatus = PLAYING;
-                playerLock.notifyAll();
-            }
-            return playerStatus == PLAYING;
-        }
-    }
+        /**
+        * Pauses playback. Returns true if new state is PAUSED.
+        * @return True if the new state is PAUSED, False if something got boned up.
+        */
+	    public boolean pause() {
+	        synchronized (playerLock) {
+	            if (playerStatus == PLAYING) {
+	                playerStatus = PAUSED;
+	            }
+	            return playerStatus == PAUSED;
+	        }
+	    }
 
-    /**
-     * Stops playback. If not playing, does nothing
-     */
-    public void stop() {
-        synchronized (playerLock) {
-            playerStatus = FINISHED;
-            playerLock.notifyAll();
-        }
-    }
-    
+	    /**
+	     * Resumes playback. Returns true if the new state is PLAYING.
+	     */
+	    public boolean resume() {
+	        synchronized (playerLock) {
+	            if (playerStatus == PAUSED) {
+	                playerStatus = PLAYING;
+	                playerLock.notifyAll();
+	            }
+	            return playerStatus == PLAYING;
+	        }
+	    }
 
-    private void playInternal() {
-        while (playerStatus != FINISHED) {
-            try {
-                if (!player.play(1)) {
-                    break;
-                }
-            } catch (final JavaLayerException e) {
-                break;
-            }
-            // check if paused or terminated
-            synchronized (playerLock) {
-                while (playerStatus == PAUSED) {
-                    try {
-                        playerLock.wait();
-                    } catch (final InterruptedException e) {
-                        // terminate player
-                        break;
-                    }
-                }
-            }
-        }
-        close();
-    }
-    
+	    /**
+	     * Stops playback. If not playing, does nothing
+	     */
+	    public void stop() {
+	        synchronized (playerLock) {
+	            playerStatus = FINISHED;
+	            playerLock.notifyAll();
+	        }
+	    }
 
-    /**
-     * Closes the player, regardless of current state.
-     */
-    public void close() {
-        synchronized (playerLock) {
-            playerStatus = FINISHED;
-        }
-        //try {
-            //player.close();
-        //} catch (final Exception e) {
-            // ignore, we are terminating anyway
-       // }
-    }
+	    private void playInternal() {
+	        while (playerStatus != FINISHED) {
+	            try {
+	                if (!player.play(1)) {
+	                    break;
+	                }
+	            } catch (final JavaLayerException e) {
+	                break;
+	            }
+	            // check if paused or terminated
+	            synchronized (playerLock) {
+	                while (playerStatus == PAUSED) {
+	                    try {
+	                        playerLock.wait();
+	                    } catch (final InterruptedException e) {
+	                        // terminate player
+	                        break;
+	                    }
+	                }
+	            }
+	        }
+	        close();
+	    }
 
-    
-    /**
-     * Run method for the Thread.
-     */
-	public void run() {
-		
-		while (true) {
-			//System.out.println(commands.size());
-			if (commands.size() > 0) {
-				Object command = commands.poll();
+	    /**
+	     * Closes the player, regardless of current state.
+	     */
+	    public void close() {
+	        synchronized (playerLock) {
+	            playerStatus = FINISHED;
+	        }
+	        //try {
+	            //player.close();
+	        //} catch (final Exception e) {
+	            // ignore, we are terminating anyway
+	       // }
+	    }
 
-				// TODO: pause functionality
-				if (command instanceof PlayCommand) {
-					try {
-						final PlayCommand playCommand = (PlayCommand) command;
-						this.playSong(playCommand.getFileToPlay());
-						System.out.println(playerStatus);
-					} catch(Exception e) {
-						// file not found or otherwise unable to play? handle me here.
-						e.printStackTrace();
+        /**
+        * Run method for the Thread.
+        */
+		public void run() {
+
+			while (true) {
+				//System.out.println(commands.size());
+				if (commands.size() > 0) {
+					Object command = commands.poll();
+
+					// TODO: pause functionality
+					if (command instanceof PlayCommand) {
+						try {
+							final PlayCommand playCommand = (PlayCommand) command;
+							this.playSong(playCommand.getFileToPlay());
+							System.out.println(playerStatus);
+						} catch(Exception e) {
+							// file not found or otherwise unable to play? handle me here.
+							e.printStackTrace();
+						}
 					}
-				}
-				else if (command instanceof PauseCommand)
-					this.pause();
-				else if(command instanceof ResumeCommand)
-					this.resume();
-				else if(command instanceof StopCommand){
-					this.stop();
-				}
-				
-			}
-			
-		}
-	}
-    // demo how to use
-    public void playSong(Mp3 song) {
-        try {
-            FileInputStream input = new FileInputStream(song.getFilePath()); 
-            this.player = new Player(input);
-            playerStatus = NOTSTARTED;
+					else if (command instanceof PauseCommand)
+						this.pause();
+					else if(command instanceof ResumeCommand)
+						this.resume();
+					else if(command instanceof StopCommand){
+						this.stop();
+					}
 
-            // start playing
+				}
+
+			}
+		}
+	    // demo how to use
+	    public void playSong(Mp3 song) {
+	        try {
+	            FileInputStream input = new FileInputStream(song.getFilePath());
+	            this.player = new Player(input);
+	            playerStatus = NOTSTARTED;
+
+	            // start playing
 	            this.play();
 	        } catch (final Exception e) {
 	            throw new RuntimeException(e);
