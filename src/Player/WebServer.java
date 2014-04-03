@@ -88,7 +88,7 @@ public class WebServer extends NanoHTTPD {
 		String response = "";
 		
 		try {
-			response = new Scanner(new File("web\\index.html")).useDelimiter("\\Z").next();
+			response = new Scanner(new File("web/index.html")).useDelimiter("\\Z").next();
 			Mp3 playing = MusicPlayerFrame.getCurrentlyPlaying();
 			
 			// Replace placeholder values with dynamic data from the application

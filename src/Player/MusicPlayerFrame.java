@@ -4,9 +4,8 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.File;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -27,6 +26,7 @@ import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
@@ -39,8 +39,6 @@ import PlayerCommands.PauseCommand;
 import PlayerCommands.PlayCommand;
 import PlayerCommands.ResumeCommand;
 import PlayerCommands.StopCommand;
-
-import javax.swing.SwingConstants;
 
 
 public class MusicPlayerFrame extends JFrame {
@@ -59,6 +57,7 @@ public class MusicPlayerFrame extends JFrame {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		
 		// spin up web server
 		new Thread() {
 			public void run() {
@@ -433,7 +432,7 @@ public class MusicPlayerFrame extends JFrame {
 	}
 
 	public static String getCurrentlyPlayingTitle() {
-		if(handler.getPlayerStatus() == 1){
+		if (handler.getPlayerStatus() == 1){
 			return currentlyPlayingTitle;
 		}
 		else

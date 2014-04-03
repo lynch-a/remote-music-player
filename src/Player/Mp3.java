@@ -62,7 +62,9 @@ public class Mp3 implements Comparable<Mp3> {
 	public Mp3(String filePath, int id) {
 		fileLocation = filePath;
 		// Setting a default value for the filename
-		title = clipFileName();
+		title = new File(fileLocation).getName().replace(".mp3", "");
+		System.out.println("title: " + title);
+
 		try {
 			setMetaData();
 		} catch (IOException e) {
@@ -82,15 +84,13 @@ public class Mp3 implements Comparable<Mp3> {
 	 * sets to default values if there's nothing there.
 	 */
 	private void setMetaData() throws IOException, TagException {
-		title = null;
 		artist = null;
 		album = null;
 		MP3File mp3file = new MP3File(fileLocation);
 		if (mp3file!=null && mp3file.hasID3v1Tag()) {
 			ID3v1 id3v1Tag = mp3file.getID3v1Tag();
-			title = id3v1Tag.getTitle();
-			if (title.equals("")) {
-				title = clipFileName();
+			if (!id3v1Tag.getTitle().equals("")) {
+				title = id3v1Tag.getTitle();
 			}
 			artist = id3v1Tag.getArtist();
 			album = id3v1Tag.getAlbum();
@@ -99,11 +99,7 @@ public class Mp3 implements Comparable<Mp3> {
 		return;
 	}
 	
-	
-	/**
-	 * Clips the filename from the fileLocation.  Praise Allah for
-	 * stackoverflow.
-	 */
+	/* sorry john
 	private String clipFileName() {
 		java.util.regex.Pattern p       = java.util.regex.Pattern.compile("^[/\\\\]?(?:.+[/\\\\]+?)?(.+?)[/\\\\]?$");
 	    java.util.regex.Matcher matcher = p.matcher(fileLocation);
@@ -113,7 +109,7 @@ public class Mp3 implements Comparable<Mp3> {
 	    }
 	    return null;
 	}
-	
+	*/
 	
 	/**
 	 * Retrieves the song duration from the file and assigns the duration and
