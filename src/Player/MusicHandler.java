@@ -18,28 +18,19 @@ import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.AudioDevice;
 import javazoom.jl.player.Player;
 
+
 /**
  * MusicHandler class, this launches and controls a thread that acts as the main
  * music player.
  */
 public class MusicHandler implements Runnable {
-
-	/**
-	 *
-	 */
-    private final static int NOTSTARTED = 0;
-    /**
-     *
-     */
-    private final static int PLAYING = 1;
-    /**
-     *
-     */
-    private final static int PAUSED = 2;
-    /**
-     *
-     */
-    private final static int FINISHED = 3;
+	
+	enum STATE {
+		NOT_STARTED,
+		PLAYING,
+		PAUSED,
+		FINISHED
+	}
     /**
      *
      */
@@ -56,13 +47,13 @@ public class MusicHandler implements Runnable {
      * Status variable describing what the player thread is doing/supposed to
      * do.
         */
-        private int playerStatus;
+        private STATE playerState;
 
         /**
         * Constructor, sets the playerStatus to NOTSTARTED.
         */
 	    public MusicHandler(){
-	    	playerStatus = NOTSTARTED;
+	    	playerState = STATE.NOT_STARTED;
 	    }
 
         /**
@@ -80,8 +71,8 @@ public class MusicHandler implements Runnable {
         */
 	    public void play() throws JavaLayerException {
 	        synchronized (playerLock) {
-	            switch (playerStatus) {
-	                case NOTSTARTED:
+	            switch (playerState) {
+	                case NOT_STARTED:
 	                    final Runnable r = new Runnable() {
 	                        public void run() {
 	                            playInternal();
@@ -91,7 +82,7 @@ public class MusicHandler implements Runnable {
 	                    final Thread t = new Thread(r);
 	                    t.setDaemon(true);
 	                    t.setPriority(Thread.MAX_PRIORITY);
-	                    playerStatus = PLAYING;
+	                    playerState = STATE.PLAYING;
 	                    t.start();
 	                    break;
 	                case PAUSED:
@@ -109,10 +100,10 @@ public class MusicHandler implements Runnable {
         */
 	    public boolean pause() {
 	        synchronized (playerLock) {
-	            if (playerStatus == PLAYING) {
-	                playerStatus = PAUSED;
+	            if (playerState == STATE.PLAYING) {
+	                playerState = STATE.PAUSED;
 	            }
-	            return playerStatus == PAUSED;
+	            return playerState == STATE.PAUSED;
 	        }
 	    }
 
@@ -121,11 +112,11 @@ public class MusicHandler implements Runnable {
 	     */
 	    public boolean resume() {
 	        synchronized (playerLock) {
-	            if (playerStatus == PAUSED) {
-	                playerStatus = PLAYING;
+	            if (playerState == STATE.PAUSED) {
+	                playerState = STATE.PLAYING;
 	                playerLock.notifyAll();
 	            }
-	            return playerStatus == PLAYING;
+	            return playerState == STATE.PLAYING;
 	        }
 	    }
 
@@ -134,13 +125,13 @@ public class MusicHandler implements Runnable {
 	     */
 	    public void stop() {
 	        synchronized (playerLock) {
-	            playerStatus = FINISHED;
+	            playerState = STATE.FINISHED;
 	            playerLock.notifyAll();
 	        }
 	    }
 
 	    private void playInternal() {
-	        while (playerStatus != FINISHED) {
+	        while (playerState != STATE.FINISHED) {
 	            try {
 	                if (!player.play(1)) {
 	                    break;
@@ -150,7 +141,7 @@ public class MusicHandler implements Runnable {
 	            }
 	            // check if paused or terminated
 	            synchronized (playerLock) {
-	                while (playerStatus == PAUSED) {
+	                while (playerState == STATE.PAUSED) {
 	                    try {
 	                        playerLock.wait();
 	                    } catch (final InterruptedException e) {
@@ -168,7 +159,7 @@ public class MusicHandler implements Runnable {
 	     */
 	    public void close() {
 	        synchronized (playerLock) {
-	            playerStatus = FINISHED;
+	            playerState = STATE.FINISHED;
 	        }
 	        //try {
 	            //player.close();
@@ -192,7 +183,7 @@ public class MusicHandler implements Runnable {
 						try {
 							final PlayCommand playCommand = (PlayCommand) command;
 							this.playSong(playCommand.getFileToPlay());
-							System.out.println(playerStatus);
+							System.out.println(playerState);
 						} catch(Exception e) {
 							// file not found or otherwise unable to play? handle me here.
 							e.printStackTrace();
@@ -215,7 +206,7 @@ public class MusicHandler implements Runnable {
 	        try {
 	            FileInputStream input = new FileInputStream(song.getFilePath());
 	            this.player = new Player(input);
-	            playerStatus = NOTSTARTED;
+	            playerState = STATE.NOT_STARTED;
 
 	            // start playing
 	            this.play();
@@ -224,8 +215,8 @@ public class MusicHandler implements Runnable {
 	        }
 	    }
 
-		public int getPlayerStatus() {
-			return this.playerStatus;
+		public STATE getPlayerState() {
+			return this.playerState;
 		}
 
 
