@@ -10345,24 +10345,27 @@ return jQuery;
 		$( document ).ready(function() {
 		
 			window.setInterval(reloadPage, 5000);
-
+			
 			function reloadPage() {
+			
+				if($("#librarysearch").val() == "") {
 
-			  var jqxhr = $.ajax( "reload/" )
-			  .done(function(response) {
-				$('#maincontent').html(response);
-				// Bind click events of newly added upvote buttons
-				$(".upvote").on('click', function (e) {
-					upvote(e);		
-				});
+				  var jqxhr = $.ajax( "reload/" )
+				  .done(function(response) {
+					$('#maincontent').html(response);
+					// Bind click events of newly added upvote buttons
+					$(".upvote").on('click', function (e) {
+						upvote(e);		
+					});
 
-			  })
-			  .fail(function() {
-			    alert("Something went wrong...");
-			  })
-			  .always(function() {
-			    //alert( "complete" );
-			  });
+				  })
+				  .fail(function() {
+					alert("Something went wrong...");
+				  })
+				  .always(function() {
+					//alert( "complete" );
+				  });
+				  }
 			}
 		
 			function upvote(e) {
@@ -10394,6 +10397,8 @@ return jQuery;
 			
 			// Search Function
 			$("#librarysearch").keyup(function(){
+						
+			
 			  var jqxhr = $.ajax( "search/" + $(this).val() )
 				  .done(function(response) {
 						
