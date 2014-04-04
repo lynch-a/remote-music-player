@@ -10348,8 +10348,12 @@ return jQuery;
 			  var id = this;
 			  var jqxhr = $.ajax( "upvote/" + $(this).val() )
 			  .done(function(response) {
-			    $(".upvotecount" + $(id).val()).html(response);
-			    location.reload(true);
+			  	if (response == "TMA") {
+			  		alert("you may upvote songs every 30 seconds");
+			  	} else {
+				    $(".upvotecount" + $(id).val()).html(response);
+				    location.reload(true);
+				}
 			  })
 			  .fail(function() {
 			    alert("Something went wrong...");
@@ -10358,21 +10362,6 @@ return jQuery;
 			    //alert( "complete" );
 			  });
 			  
-			});
-			
-			$(".downvote").click(function() {
-			  //alert('upvote');
-			  var id = this;
-			  var jqxhr = $.ajax( "downvote/" +  $(this).val())
-			  .done(function(response) {
-			    $(".downvotecount" + $(id).val()).html(response);
-			  })
-			  .fail(function() {
-			    alert("Something went wrong...");
-			  })
-			  .always(function() {
-			    //alert( "complete" );
-			  });
 			});
 			
 		});

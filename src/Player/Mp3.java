@@ -84,8 +84,8 @@ public class Mp3 implements Comparable<Mp3> {
 	 * sets to default values if there's nothing there.
 	 */
 	private void setMetaData() throws IOException, TagException {
-		artist = null;
-		album = null;
+		artist = "";
+		album = "";
 		MP3File mp3file = new MP3File(fileLocation);
 		if (mp3file!=null && mp3file.hasID3v1Tag()) {
 			ID3v1 id3v1Tag = mp3file.getID3v1Tag();

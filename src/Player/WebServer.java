@@ -47,7 +47,7 @@ public class WebServer extends NanoHTTPD {
 
 				// this client has sent an upvote within 30 seconds
 				if (currentTime - lastAction < (1 * 1000 * 30)) {
-					return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, "You have already done that recently. Please wait a few seconds before trying again.");
+					return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, "TMA");
 				} else {
 					lastActionTime.put(sourceHost, new Long(System.currentTimeMillis()));
 				}
@@ -84,8 +84,12 @@ public class WebServer extends NanoHTTPD {
 				if(song != playing){
 					String[] data = song.getWebData();
 					songlist += "<tr>";
-					for(int i = 0; i < data.length; i++)
+					for(int i = 0; i < data.length; i++) {
+						if (data[i].length() > 20) {
+							data[i] = data[i].substring(0, 17) + "...";
+						}
 						songlist += "<td>" + data[i] + "</td>";
+					}
 					songlist += "<td>" + String.format("<button class='upvote' value=%d>Upvote</button>", song.getSongId()) + "</td>"
 							+ "</tr>";
 				}
