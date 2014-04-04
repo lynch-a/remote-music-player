@@ -10376,11 +10376,18 @@ return jQuery;
 			  	if (response == "TMA") {
 			  		alert("you may upvote songs every 30 seconds");
 			  	} else {
-						$('#maincontent').html(response);
-						// Bind click events of newly added upvote buttons
-						$(".upvote").on('click', function (e) {
-							upvote(e);		
-						});
+				
+						// Replace page content only if upvote was not performed on search result
+						//if($("#librarysearch").val() != "") {
+							//$(".upvotecount" + $(id).val()).html(response);
+						//} else {
+				
+							$('#maincontent').html(response);
+							// Bind click events of newly added upvote buttons
+							$(".upvote").on('click', function (e) {
+								upvote(e);		
+							});
+						//}
 				}
 			  })
 			  .fail(function() {
@@ -10422,6 +10429,19 @@ return jQuery;
 
 		<title>Remote Democratic Jukebox</title>
 		<style type='text/css'>
+			#librarysearch {
+				width: 200px; 
+				height: 40px; 
+				border: 1px solid #999999; 
+				font-family: verdana, arial, sans-serif;
+				font-size:25px;
+				color:#333333;
+			}
+			h3 {
+				font-family: verdana, arial, sans-serif;
+				font-size:25px;
+				color:#333333;
+			}
 			h1 {
 				font-family: verdana, arial, sans-serif;
 				font-size:40px;
@@ -10484,7 +10504,7 @@ return jQuery;
 		</style>
 	</head>
 	<body>
-	Search: <input id="librarysearch">
+	<h3>Search: <input id="librarysearch"></h3>
 	<div id="maincontent">
 		$SONG_TABLE
 	</div>
