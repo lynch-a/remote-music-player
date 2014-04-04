@@ -52,12 +52,21 @@ public class WebServer extends NanoHTTPD {
 					lastActionTime.put(sourceHost, new Long(System.currentTimeMillis()));
 				}
 			}
-			handleUpvote(params);
+			return handleUpvote(params);
+
+		} else if (params[0].equals("search")) {
+			if(params.length > 1) {
+				return handleSearch(params[1].trim());
+			}
+			else {
+				// Cheat for now for when no search results entered, I'll fix later...probably
+				return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, "<script>location.reload();</script>");
+				//return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, "<reply><status>0</status><message>Please enter search parameters</message></reply>");
+			}
 			
-			return handleIndex();
-		} else {
-			return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, "function not implemented");
 		}
+		return handleIndex();
+
 	}
 
 	public Response handleIndex() {
@@ -88,7 +97,12 @@ public class WebServer extends NanoHTTPD {
 						if (data[i].length() > 20) {
 							data[i] = data[i].substring(0, 17) + "...";
 						}
-						songlist += "<td>" + data[i] + "</td>";
+						// Hardcoded upvotecount index for now
+						if(i == 2) {
+							songlist += "<td>" + String.format("<span class=upvotecount%d>", song.getSongId()) + data[2] + "</span></td>";
+						} else {
+							songlist += "<td>" + data[i] + "</td>";
+						}
 					}
 					songlist += "<td>" + String.format("<button class='upvote' value=%d>Upvote</button>", song.getSongId()) + "</td>"
 							+ "</tr>";
@@ -107,6 +121,54 @@ public class WebServer extends NanoHTTPD {
 	}
 
 
+	public Response handleSearch(String searchParam) {
+		MusicLibrary library = MusicPlayerFrame.getLibrary();
+		ArrayList<Mp3> mp3List = library.getMp3List();
+
+		// Fetch pre-formatted index file.
+		String response = "";
+
+		Mp3 playing = MusicPlayerFrame.getCurrentlyPlaying();
+
+		// Replace placeholder values with dynamic data from the application
+		response = "<h1>Search Results:</h1>" 
+				+ "<table class='gridtable'>" +
+				"<tr>" +
+				"<th>Title</th>" +
+				"<th>Artist</th>" +
+				"<th>Votes</th>" +
+				"<th></th>" +
+				"</tr>";
+		for (Mp3 song : mp3List) {
+			
+			if(song != playing){
+				String[] data = song.getWebData();
+				// only search based on title for now
+				System.out.println("Searching on: " + data[0] + "|" +searchParam + "|");
+				if(data[0].toLowerCase().contains(searchParam.toLowerCase())) {
+					response += "<tr>";
+					for(int i = 0; i < data.length; i++) {
+						if (data[i].length() > 20) {
+							data[i] = data[i].substring(0, 17) + "...";
+						}
+						// Hardcoded upvotecount index for now
+						if(i == 2) {
+							response += "<td>" + String.format("<span class=upvotecount%d>", song.getSongId())  + data[2] + "</span></td>";
+						} else {
+							response += "<td>" + data[i] + "</td>";
+						}
+
+					}
+					response += "<td>" + String.format("<button class='upvote' value=%d>Upvote</button>", song.getSongId()) + "</td>"
+							+ "</tr>";
+				}
+			}
+		}
+		response += "</table>";
+		
+		return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, response);
+	}
+	
 	public Response handleUpvote(String[] params) {
 		int upvoteCount;
 		try {
@@ -118,7 +180,7 @@ public class WebServer extends NanoHTTPD {
 			return new NanoHTTPD.Response( HTTP_OK, MIME_HTML, "Error - invalid song given");
 		}
 
-		// For now I'm just returning a simple integer value represnntig the current number of upvotes.  This will be changed to return a xml formatted string.
+		// For now I'm just returning a simple integer value representing the current number of upvotes.  This will be changed to return a xml formatted string.
 
 		return new NanoHTTPD.Response( HTTP_OK, MIME_HTML, Integer.toString(upvoteCount));
 	}

@@ -10343,16 +10343,16 @@ return jQuery;
 		
 		<script>
 		$( document ).ready(function() {
-			$(".upvote").click(function() {
+		
+			function upvote(e) {
 			  //alert('upvote');
-			  var id = this;
-			  var jqxhr = $.ajax( "upvote/" + $(this).val() )
+			  var id = $(e.target);
+			  var jqxhr = $.ajax( "upvote/" + $(e.target).val() )
 			  .done(function(response) {
 			  	if (response == "TMA") {
 			  		alert("you may upvote songs every 30 seconds");
 			  	} else {
 				    $(".upvotecount" + $(id).val()).html(response);
-				    location.reload(true);
 				}
 			  })
 			  .fail(function() {
@@ -10361,17 +10361,35 @@ return jQuery;
 			  .always(function() {
 			    //alert( "complete" );
 			  });
-			  
+			}
+		
+			$(".upvote").click(function(e) {
+				upvote(e);			  
 			});
+			
+			// Search Function
+			$("#librarysearch").keyup(function(){
+			  var jqxhr = $.ajax( "search/" + $(this).val() )
+				  .done(function(response) {
+						
+					    $('#maincontent').html(response);
+						// Bind click events of newly added upvote buttons
+						$(".upvote").on('click', function (e) {
+							upvote(e);		
+						});
+				  })
+				  .fail(function() {
+				    alert("Something went wrong...");
+				  })
+				  .always(function() {
+				    //alert( "complete" );
+				  });
+				});
 			
 		});
 		
 		</script>
-		<script type='text/JavaScript'>
-			function AutoRefresh( t ) {
-				setTimeout("location.reload(true);", t);
-			}
-		</script>
+
 		<title>Remote Democratic Jukebox</title>
 		<style type='text/css'>
 			h1 {
@@ -10435,7 +10453,10 @@ return jQuery;
    			}
 		</style>
 	</head>
-	<body onload="JavaScript:AutoRefresh(10000);">
+	<body>
+	Search: <input id="librarysearch">
+	<div id="maincontent">
 		$SONG_TABLE
+	</div>
 	</body>
 </html>
