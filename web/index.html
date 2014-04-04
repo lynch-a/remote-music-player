@@ -10344,6 +10344,27 @@ return jQuery;
 		<script>
 		$( document ).ready(function() {
 		
+			window.setInterval(reloadPage, 5000);
+
+			function reloadPage() {
+
+			  var jqxhr = $.ajax( "reload/" )
+			  .done(function(response) {
+				$('#maincontent').html(response);
+				// Bind click events of newly added upvote buttons
+				$(".upvote").on('click', function (e) {
+					upvote(e);		
+				});
+
+			  })
+			  .fail(function() {
+			    alert("Something went wrong...");
+			  })
+			  .always(function() {
+			    //alert( "complete" );
+			  });
+			}
+		
 			function upvote(e) {
 			  //alert('upvote');
 			  var id = $(e.target);
@@ -10352,7 +10373,11 @@ return jQuery;
 			  	if (response == "TMA") {
 			  		alert("you may upvote songs every 30 seconds");
 			  	} else {
-				    $(".upvotecount" + $(id).val()).html(response);
+						$('#maincontent').html(response);
+						// Bind click events of newly added upvote buttons
+						$(".upvote").on('click', function (e) {
+							upvote(e);		
+						});
 				}
 			  })
 			  .fail(function() {

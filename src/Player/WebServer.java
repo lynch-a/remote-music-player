@@ -60,56 +60,26 @@ public class WebServer extends NanoHTTPD {
 			}
 			else {
 				// Cheat for now for when no search results entered, I'll fix later...probably
-				return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, "<script>location.reload();</script>");
-				//return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, "<reply><status>0</status><message>Please enter search parameters</message></reply>");
+				return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, getMainPageData());
 			}
 			
+		} else if (params[0].equals("reload")) {  // Returns basic page data when refresh is called
+			return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, getMainPageData());
 		}
 		return handleIndex();
 
 	}
 
 	public Response handleIndex() {
-		MusicLibrary library = MusicPlayerFrame.getLibrary();
-		ArrayList<Mp3> mp3List = library.getMp3List();
 
 		// Fetch pre-formatted index file.
 		String response = "";
 
 		try {
 			response = new Scanner(new File("web/index.html")).useDelimiter("\\Z").next();
-			Mp3 playing = MusicPlayerFrame.getCurrentlyPlaying();
 
-			// Replace placeholder values with dynamic data from the application
-			String songlist = "<h1>Currently Playing: " + MusicPlayerFrame.getCurrentlyPlayingTitle() + "</h1>" 
-					+ "<table class='gridtable'>" +
-					"<tr>" +
-					"<th>Title</th>" +
-					"<th>Artist</th>" +
-					"<th>Votes</th>" +
-					"<th></th>" +
-					"</tr>";
-			for (Mp3 song : mp3List) {
-				if(song != playing){
-					String[] data = song.getWebData();
-					songlist += "<tr>";
-					for(int i = 0; i < data.length; i++) {
-						if (data[i].length() > 20) {
-							data[i] = data[i].substring(0, 17) + "...";
-						}
-						// Hardcoded upvotecount index for now
-						if(i == 2) {
-							songlist += "<td>" + String.format("<span class=upvotecount%d>", song.getSongId()) + data[2] + "</span></td>";
-						} else {
-							songlist += "<td>" + data[i] + "</td>";
-						}
-					}
-					songlist += "<td>" + String.format("<button class='upvote' value=%d>Upvote</button>", song.getSongId()) + "</td>"
-							+ "</tr>";
-				}
-			}
-			songlist += "</table>";
-
+			String songlist = getMainPageData();
+			
 			response = response.replace("$SONG_TABLE", songlist);
 
 		} catch (IOException e) {
@@ -120,6 +90,44 @@ public class WebServer extends NanoHTTPD {
 		return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, response);
 	}
 
+	public String getMainPageData() {
+		MusicLibrary library = MusicPlayerFrame.getLibrary();
+		ArrayList<Mp3> mp3List = library.getMp3List();
+		
+		Mp3 playing = MusicPlayerFrame.getCurrentlyPlaying();
+
+		// Replace placeholder values with dynamic data from the application
+		String songlist = "<h1>Currently Playing: " + MusicPlayerFrame.getCurrentlyPlayingTitle() + "</h1>" 
+				+ "<table class='gridtable'>" +
+				"<tr>" +
+				"<th>Title</th>" +
+				"<th>Artist</th>" +
+				"<th>Votes</th>" +
+				"<th></th>" +
+				"</tr>";
+		for (Mp3 song : mp3List) {
+			if(song != playing){
+				String[] data = song.getWebData();
+				songlist += "<tr>";
+				for(int i = 0; i < data.length; i++) {
+					if (data[i].length() > 20) {
+						data[i] = data[i].substring(0, 17) + "...";
+					}
+					// Hardcoded upvotecount index for now
+					if(i == 2) {
+						songlist += "<td>" + String.format("<span class=upvotecount%d>", song.getSongId()) + data[2] + "</span></td>";
+					} else {
+						songlist += "<td>" + data[i] + "</td>";
+					}
+				}
+				songlist += "<td>" + String.format("<button class='upvote' value=%d>Upvote</button>", song.getSongId()) + "</td>"
+						+ "</tr>";
+			}
+		}
+		songlist += "</table>";
+		
+		return songlist;
+	}
 
 	public Response handleSearch(String searchParam) {
 		MusicLibrary library = MusicPlayerFrame.getLibrary();
@@ -182,6 +190,6 @@ public class WebServer extends NanoHTTPD {
 
 		// For now I'm just returning a simple integer value representing the current number of upvotes.  This will be changed to return a xml formatted string.
 
-		return new NanoHTTPD.Response( HTTP_OK, MIME_HTML, Integer.toString(upvoteCount));
+		return new NanoHTTPD.Response( HTTP_OK, MIME_HTML, getMainPageData());
 	}
 }
