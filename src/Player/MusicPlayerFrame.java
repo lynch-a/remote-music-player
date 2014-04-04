@@ -336,32 +336,43 @@ public class MusicPlayerFrame extends JFrame {
 			return;
 		}
 
-
-
 		if (handler.getPlayerState() == STATE.PLAYING) {
 			System.out.println("sending pause command");
 			handler.commands.add(new PauseCommand());
 			btnPlay.setText(">");
 			//MusicHandler.commands.add(new PlayCommand(list.getMp3ByPlaylistId(selectSongId)));
 
-		} else {
-			if(handler.getPlayerState() == STATE.PAUSED){
+		} else { // music is not playing
+			if (handler.getPlayerState() == STATE.PAUSED) { // is music paused?
 				handler.commands.add(new ResumeCommand());
-			}else if(handler.getPlayerState() == STATE.NOT_STARTED || handler.getPlayerState() == STATE.FINISHED){
-				int selectSongId = Integer.parseInt(""+currentPlaylistTable.getModel().getValueAt(0, 0));
+			} else if (handler.getPlayerState() == STATE.NOT_STARTED || handler.getPlayerState() == STATE.FINISHED) { // is music not paused?
+
+				// this chooses which song (by row) should be played. generally this should be song 1.
+				int selectSongId;
+				
+				if (library.totalUpvotes() == 0) {
+					// nobody has upvoted anything, find the next song and choose it
+					int choice = library.getMp3Index(currentlyPlaying);
+					// check if we are at the end of the list and loop back around
+					if (choice >= currentPlaylistTable.getRowCount()) {
+						selectSongId = 0;
+					} else {
+						selectSongId = choice+1;
+					}
+				} else {
+					selectSongId = 0;
+				}
 				System.out.println("selectSongId: " + selectSongId);
-				Mp3 selectSong = list.getMp3ById(selectSongId);
-				if(!selectSong.getFile().exists()){
+				Mp3 selectSong = list.getMp3List().get(selectSongId);
+				if (!selectSong.getFile().exists()) { // song does not exist
 					String message = selectSong.getTitle() + " could not be found.\n" +
 							"This song will now be removed from the library.";
 					JOptionPane.showMessageDialog(contentPane, message, "Could not locate mp3 file", JOptionPane.ERROR_MESSAGE);
 					((DefaultTableModel) currentPlaylistTable.getModel()).removeRow(0);
 					list.getMp3List().remove(selectSong);
-					//list.printMp3List();
-				}
-				else{
-					currentlyPlaying = list.getMp3ById(selectSongId);
-					handler.commands.add(new PlayCommand(list.getMp3ById(selectSongId)));
+				} else { // start playing a song
+					currentlyPlaying = list.getMp3List().get(selectSongId);
+					handler.commands.add(new PlayCommand(currentlyPlaying));
 					lblSongTitle.setText(currentlyPlaying.getTitle());
 					redrawTable();
 				}
@@ -432,17 +443,11 @@ public class MusicPlayerFrame extends JFrame {
 
 
 	}
-	/*
-	public static int doDownvote(int songId) {
-		Mp3 mp3 = library.getMp3ById(songId);
-		mp3.addDownvote();
-		redrawTable();
-		return mp3.getDownvotes(); 
-	}*/
 
 	public static MusicLibrary getLibrary() {
 		return library;
 	}
+
 
 	public static void playNextSong() {
 		currentlyPlaying.resetUpvoteCount();
@@ -450,6 +455,7 @@ public class MusicPlayerFrame extends JFrame {
 		System.out.println("selectSongId: " + currentlyPlaying);
 		playButtonPressed();
 	}
+
 
 	public static String getCurrentlyPlayingTitle() {
 		if (handler.getPlayerState() == STATE.PLAYING){

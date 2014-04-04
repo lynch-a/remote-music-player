@@ -21,13 +21,22 @@ public class MusicLibrary {
 		return mp3;
 	}
 	
+	// this is dumb
+	public int totalUpvotes() {
+		int total = 0;
+		for (Mp3 mp3: mp3List) {
+			total += mp3.getUpvotes();
+		}
+		return total;
+	}
+	
 	public ArrayList<Mp3> getMp3List(){
 		return mp3List;
 		
 	}
 	
 	// -1 if not found
-	public int getMp3Row(Mp3 needle) {
+	public int getMp3Index(Mp3 needle) {
 		int i = 0;
 		for (Mp3 haystack : mp3List) {
 			if (haystack == needle) {
