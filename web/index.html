@@ -10343,16 +10343,51 @@ return jQuery;
 		
 		<script>
 		$( document ).ready(function() {
-			$(".upvote").click(function() {
+		
+			window.setInterval(reloadPage, 5000);
+			
+			function reloadPage() {
+			
+				if($("#librarysearch").val() == "") {
+
+				  var jqxhr = $.ajax( "reload/" )
+				  .done(function(response) {
+					$('#maincontent').html(response);
+					// Bind click events of newly added upvote buttons
+					$(".upvote").on('click', function (e) {
+						upvote(e);		
+					});
+
+				  })
+				  .fail(function() {
+					alert("Something went wrong...");
+				  })
+				  .always(function() {
+					//alert( "complete" );
+				  });
+				  }
+			}
+		
+			function upvote(e) {
 			  //alert('upvote');
-			  var id = this;
-			  var jqxhr = $.ajax( "upvote/" + $(this).val() )
+			  var id = $(e.target);
+			  var jqxhr = $.ajax( "upvote/" + $(e.target).val() )
 			  .done(function(response) {
 			  	if (response == "TMA") {
 			  		alert("you may upvote songs every 30 seconds");
 			  	} else {
-				    $(".upvotecount" + $(id).val()).html(response);
-				    location.reload(true);
+				
+						// Replace page content only if upvote was not performed on search result
+						//if($("#librarysearch").val() != "") {
+							//$(".upvotecount" + $(id).val()).html(response);
+						//} else {
+				
+							$('#maincontent').html(response);
+							// Bind click events of newly added upvote buttons
+							$(".upvote").on('click', function (e) {
+								upvote(e);		
+							});
+						//}
 				}
 			  })
 			  .fail(function() {
@@ -10361,19 +10396,52 @@ return jQuery;
 			  .always(function() {
 			    //alert( "complete" );
 			  });
-			  
+			}
+		
+			$(".upvote").click(function(e) {
+				upvote(e);			  
 			});
+			
+			// Search Function
+			$("#librarysearch").keyup(function(){
+						
+			
+			  var jqxhr = $.ajax( "search/" + $(this).val() )
+				  .done(function(response) {
+						
+					    $('#maincontent').html(response);
+						// Bind click events of newly added upvote buttons
+						$(".upvote").on('click', function (e) {
+							upvote(e);		
+						});
+				  })
+				  .fail(function() {
+				    alert("Something went wrong...");
+				  })
+				  .always(function() {
+				    //alert( "complete" );
+				  });
+				});
 			
 		});
 		
 		</script>
-		<script type='text/JavaScript'>
-			function AutoRefresh( t ) {
-				setTimeout("location.reload(true);", t);
-			}
-		</script>
+
 		<title>Remote Democratic Jukebox</title>
 		<style type='text/css'>
+			#librarysearch {
+				width: 200px; 
+				height: 40px; 
+				border: 1px solid #999999; 
+				font-family: verdana, arial, sans-serif;
+				font-size:25px;
+				color:#333333;
+			}
+			h3 {
+				font-family: verdana, arial, sans-serif;
+				font-size:25px;
+				color:#333333;
+			}
 			h1 {
 				font-family: verdana, arial, sans-serif;
 				font-size:40px;
@@ -10435,7 +10503,10 @@ return jQuery;
    			}
 		</style>
 	</head>
-	<body onload="JavaScript:AutoRefresh(10000);">
+	<body>
+	<h3>Search: <input id="librarysearch"></h3>
+	<div id="maincontent">
 		$SONG_TABLE
+	</div>
 	</body>
 </html>
