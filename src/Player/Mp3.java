@@ -261,4 +261,13 @@ public class Mp3 implements Comparable<Mp3> {
 		upvoteCount = 0;
 		
 	}
+	
+	public String getShortTitle() {
+		String shortTitle = title;
+		if (shortTitle.length() > 35) {
+			shortTitle = shortTitle.substring(0, 32) + "...";
+		}
+		
+		return shortTitle;
+	}
 }

@@ -72,7 +72,7 @@ public class WebServer extends NanoHTTPD {
 			Mp3 playing = MusicPlayerFrame.getCurrentlyPlaying();
 
 			// Replace placeholder values with dynamic data from the application
-			String songlist = "<h1>Currently Playing: " + MusicPlayerFrame.getCurrentlyPlayingTitle() + "</h1>" 
+			String songlist = "<h1>Currently Playing:<br/><br/>" + MusicPlayerFrame.getCurrentlyPlayingTitle() + "</h1>" 
 					+ "<table class='gridtable'>" +
 					"<tr>" +
 					"<th>Title</th>" +

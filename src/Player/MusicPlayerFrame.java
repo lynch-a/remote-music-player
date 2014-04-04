@@ -1,5 +1,6 @@
 package Player;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
@@ -153,6 +154,7 @@ public class MusicPlayerFrame extends JFrame {
 			lblWebAddress = new JTextField("Web Address: http://" + InetAddress.getLocalHost().getHostAddress().toString() + ":8080");
 		} catch (UnknownHostException e1) {
 			// TODO Auto-generated catch block
+			System.exit(1);
 			e1.printStackTrace();
 		}
 		lblWebAddress.setBorder(null);
@@ -163,35 +165,37 @@ public class MusicPlayerFrame extends JFrame {
 
 		lblSongTitle = new JLabel("");
 		lblSongTitle.setHorizontalTextPosition(SwingConstants.CENTER);
-		lblSongTitle.setFont(new Font("Tahoma", Font.BOLD, 30));
+		lblSongTitle.setMaximumSize(new Dimension(100, 400));
+		lblSongTitle.setFont(new Font("Tahoma", Font.BOLD, 20));
 
 		GroupLayout gl_mainContentPanel = new GroupLayout(mainContentPanel);
 		gl_mainContentPanel.setHorizontalGroup(
-				gl_mainContentPanel.createParallelGroup(Alignment.TRAILING)
+			gl_mainContentPanel.createParallelGroup(Alignment.LEADING)
 				.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 767, Short.MAX_VALUE)
 				.addGroup(gl_mainContentPanel.createSequentialGroup()
-						.addContainerGap()
-						.addComponent(lblCurrentlyPlaying)
-						.addPreferredGap(ComponentPlacement.RELATED, 248, Short.MAX_VALUE)
-						.addComponent(lblWebAddress, GroupLayout.PREFERRED_SIZE, 289, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.LEADING, gl_mainContentPanel.createSequentialGroup()
-								.addContainerGap()
-								.addComponent(lblSongTitle, GroupLayout.DEFAULT_SIZE, 737, Short.MAX_VALUE)
-								.addContainerGap())
-				);
-		gl_mainContentPanel.setVerticalGroup(
-				gl_mainContentPanel.createParallelGroup(Alignment.TRAILING)
+					.addContainerGap()
+					.addComponent(lblCurrentlyPlaying)
+					.addPreferredGap(ComponentPlacement.RELATED, 188, Short.MAX_VALUE)
+					.addComponent(lblWebAddress, GroupLayout.PREFERRED_SIZE, 345, GroupLayout.PREFERRED_SIZE)
+					.addGap(45))
 				.addGroup(gl_mainContentPanel.createSequentialGroup()
-						.addGroup(gl_mainContentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblWebAddress, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE)
-								.addGroup(gl_mainContentPanel.createSequentialGroup()
-										.addGap(8)
-										.addComponent(lblCurrentlyPlaying)))
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(lblSongTitle, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 318, GroupLayout.PREFERRED_SIZE))
-				);
+					.addContainerGap()
+					.addComponent(lblSongTitle, GroupLayout.DEFAULT_SIZE, 755, Short.MAX_VALUE)
+					.addContainerGap())
+		);
+		gl_mainContentPanel.setVerticalGroup(
+			gl_mainContentPanel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_mainContentPanel.createSequentialGroup()
+					.addGroup(gl_mainContentPanel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_mainContentPanel.createSequentialGroup()
+							.addGap(8)
+							.addComponent(lblCurrentlyPlaying))
+						.addComponent(lblWebAddress, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+					.addComponent(lblSongTitle, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 318, GroupLayout.PREFERRED_SIZE))
+		);
 
 		currentPlaylistTable = new JTable();
 		scrollPane_1.setViewportView(currentPlaylistTable);
@@ -330,12 +334,6 @@ public class MusicPlayerFrame extends JFrame {
 	}
 
 	public static void playButtonPressed() {
-		MusicLibrary list = library;
-		if (currentPlaylistTable.getModel().getRowCount() == 0) {
-			JOptionPane.showMessageDialog(contentPane, "You do not have any songs in your library.\nPlease add a song to the library.", "Empty Library", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-
 		if (handler.getPlayerState() == STATE.PLAYING) {
 			System.out.println("sending pause command");
 			handler.commands.add(new PauseCommand());
@@ -343,13 +341,21 @@ public class MusicPlayerFrame extends JFrame {
 			//MusicHandler.commands.add(new PlayCommand(list.getMp3ByPlaylistId(selectSongId)));
 
 		} else { // music is not playing
+
+			// see if there is anything in the library
+			if (library.getMp3List().size() == 0) {
+				JOptionPane.showMessageDialog(contentPane, "You do not have any songs in your library.\nPlease add a song to the library.", "Empty Library", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
+
 			if (handler.getPlayerState() == STATE.PAUSED) { // is music paused?
 				handler.commands.add(new ResumeCommand());
 			} else if (handler.getPlayerState() == STATE.NOT_STARTED || handler.getPlayerState() == STATE.FINISHED) { // is music not paused?
 
 				// this chooses which song (by row) should be played. generally this should be song 1.
 				int selectSongId;
-				
+
 				if (library.totalUpvotes() == 0) {
 					// nobody has upvoted anything, find the next song and choose it
 					int choice = library.getMp3Index(currentlyPlaying);
@@ -362,18 +368,19 @@ public class MusicPlayerFrame extends JFrame {
 				} else {
 					selectSongId = 0;
 				}
+				
 				System.out.println("selectSongId: " + selectSongId);
-				Mp3 selectSong = list.getMp3List().get(selectSongId);
+				Mp3 selectSong = library.getMp3List().get(selectSongId);
 				if (!selectSong.getFile().exists()) { // song does not exist
 					String message = selectSong.getTitle() + " could not be found.\n" +
 							"This song will now be removed from the library.";
 					JOptionPane.showMessageDialog(contentPane, message, "Could not locate mp3 file", JOptionPane.ERROR_MESSAGE);
 					((DefaultTableModel) currentPlaylistTable.getModel()).removeRow(0);
-					list.getMp3List().remove(selectSong);
+					library.getMp3List().remove(selectSong);
 				} else { // start playing a song
-					currentlyPlaying = list.getMp3List().get(selectSongId);
+					currentlyPlaying = library.getMp3List().get(selectSongId);
 					handler.commands.add(new PlayCommand(currentlyPlaying));
-					lblSongTitle.setText(currentlyPlaying.getTitle());
+					lblSongTitle.setText(currentlyPlaying.getShortTitle());
 					redrawTable();
 				}
 			}
