@@ -14,6 +14,8 @@ import java.util.Scanner;
  */
 public class WebServer extends NanoHTTPD {
 
+	private int UPVOTE_DELAY_SECONDS = 7;
+	
 	public HashMap<String, Long> lastActionTime = new HashMap<String, Long>();
 
 	public WebServer() throws IOException {
@@ -34,6 +36,14 @@ public class WebServer extends NanoHTTPD {
 		System.out.println("params: " + Arrays.toString(params));
 
 		if (params[0].equals("upvote")) {
+			
+			// DEBUG - FOR TESTING
+			System.out.println("------------------");
+			for (String ip : lastActionTime.keySet()) {
+				System.out.println("ip in action map: " + ip);
+			}
+			System.out.println("------------------");
+			
 			InetAddress addr = source.getInetAddress();
 			String sourceHost = addr.getHostName().toString();
 
@@ -46,7 +56,7 @@ public class WebServer extends NanoHTTPD {
 				long currentTime = System.currentTimeMillis();
 
 				// this client has sent an upvote within 30 seconds
-				if (currentTime - lastAction < (1 * 1000 * 30)) {
+				if (currentTime - lastAction < (UPVOTE_DELAY_SECONDS * 1000)) {
 					return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, "TMA");
 				} else {
 					lastActionTime.put(sourceHost, new Long(System.currentTimeMillis()));
@@ -78,36 +88,9 @@ public class WebServer extends NanoHTTPD {
 		try {
 			response = new Scanner(new File("web/index.html")).useDelimiter("\\Z").next();
 
-<<<<<<< HEAD
-			// Replace placeholder values with dynamic data from the application
-			String songlist = "<h1>Currently Playing:<br/><br/>" + MusicPlayerFrame.getCurrentlyPlayingTitle() + "</h1>" 
-					+ "<table class='gridtable'>" +
-					"<tr>" +
-					"<th>Title</th>" +
-					"<th>Artist</th>" +
-					"<th>Votes</th>" +
-					"<th></th>" +
-					"</tr>";
-			for (Mp3 song : mp3List) {
-				if(song != playing){
-					String[] data = song.getWebData();
-					songlist += "<tr>";
-					for(int i = 0; i < data.length; i++) {
-						if (data[i].length() > 20) {
-							data[i] = data[i].substring(0, 17) + "...";
-						}
-						songlist += "<td>" + data[i] + "</td>";
-					}
-					songlist += "<td>" + String.format("<button class='upvote' value=%d>Upvote</button>", song.getSongId()) + "</td>"
-							+ "</tr>";
-				}
-			}
-			songlist += "</table>";
 
-=======
 			String songlist = getMainPageData();
-			
->>>>>>> refs/remotes/origin/master
+
 			response = response.replace("$SONG_TABLE", songlist);
 
 		} catch (IOException e) {

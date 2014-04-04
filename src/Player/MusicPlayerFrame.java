@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collections;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -81,6 +82,18 @@ public class MusicPlayerFrame extends JFrame {
 				}
 			}
 		});
+
+
+		// FOR TESTING PURPOSES - skip to next song every 30 seconds.
+		new Thread() {
+			public void run() {
+				while (true) {
+					System.out.println("NEXT!");
+					MusicPlayerFrame.playNextSong();
+					try {Thread.sleep(30000);} catch (Exception e) {}
+				}
+			}
+		}.start();
 	}
 
 	/**
@@ -113,8 +126,10 @@ public class MusicPlayerFrame extends JFrame {
 					//System.out.println("You chose to open this file: " + filesChosen.getSelectedFile().getAbsolutePath());
 					for (File i : mp3s){
 						Mp3 mp3 = library.addSong(i.getAbsolutePath());
-						((DefaultTableModel) currentPlaylistTable.getModel()).addRow(mp3.parseMetaData()); // is this the right way to do this? Yes
+						//((DefaultTableModel) currentPlaylistTable.getModel()).addRow(mp3.parseMetaData()); // is this the right way to do this? Yes
 					}
+					Collections.shuffle(library.getMp3List());
+					redrawTable();
 				}
 			}
 		});
@@ -170,32 +185,32 @@ public class MusicPlayerFrame extends JFrame {
 
 		GroupLayout gl_mainContentPanel = new GroupLayout(mainContentPanel);
 		gl_mainContentPanel.setHorizontalGroup(
-			gl_mainContentPanel.createParallelGroup(Alignment.LEADING)
+				gl_mainContentPanel.createParallelGroup(Alignment.LEADING)
 				.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 767, Short.MAX_VALUE)
 				.addGroup(gl_mainContentPanel.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblCurrentlyPlaying)
-					.addPreferredGap(ComponentPlacement.RELATED, 188, Short.MAX_VALUE)
-					.addComponent(lblWebAddress, GroupLayout.PREFERRED_SIZE, 345, GroupLayout.PREFERRED_SIZE)
-					.addGap(45))
-				.addGroup(gl_mainContentPanel.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblSongTitle, GroupLayout.DEFAULT_SIZE, 755, Short.MAX_VALUE)
-					.addContainerGap())
-		);
-		gl_mainContentPanel.setVerticalGroup(
-			gl_mainContentPanel.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_mainContentPanel.createSequentialGroup()
-					.addGroup(gl_mainContentPanel.createParallelGroup(Alignment.LEADING)
+						.addContainerGap()
+						.addComponent(lblCurrentlyPlaying)
+						.addPreferredGap(ComponentPlacement.RELATED, 188, Short.MAX_VALUE)
+						.addComponent(lblWebAddress, GroupLayout.PREFERRED_SIZE, 345, GroupLayout.PREFERRED_SIZE)
+						.addGap(45))
 						.addGroup(gl_mainContentPanel.createSequentialGroup()
-							.addGap(8)
-							.addComponent(lblCurrentlyPlaying))
-						.addComponent(lblWebAddress, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
-					.addComponent(lblSongTitle, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 318, GroupLayout.PREFERRED_SIZE))
-		);
+								.addContainerGap()
+								.addComponent(lblSongTitle, GroupLayout.DEFAULT_SIZE, 755, Short.MAX_VALUE)
+								.addContainerGap())
+				);
+		gl_mainContentPanel.setVerticalGroup(
+				gl_mainContentPanel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_mainContentPanel.createSequentialGroup()
+						.addGroup(gl_mainContentPanel.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_mainContentPanel.createSequentialGroup()
+										.addGap(8)
+										.addComponent(lblCurrentlyPlaying))
+										.addComponent(lblWebAddress, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE))
+										.addPreferredGap(ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+										.addComponent(lblSongTitle, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 318, GroupLayout.PREFERRED_SIZE))
+				);
 
 		currentPlaylistTable = new JTable();
 		scrollPane_1.setViewportView(currentPlaylistTable);
@@ -208,7 +223,7 @@ public class MusicPlayerFrame extends JFrame {
 		currentPlaylistTable.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 
 
-		currentPlaylistTable.getColumnModel().getColumn(1).setPreferredWidth(146);
+		currentPlaylistTable.getColumnModel().getColumn(1).setPreferredWidth(250);
 		currentPlaylistTable.getColumnModel().getColumn(2).setPreferredWidth(118);
 		currentPlaylistTable.getColumnModel().getColumn(3).setPreferredWidth(43);
 		currentPlaylistTable.getColumnModel().getColumn(4).setPreferredWidth(162);
@@ -292,7 +307,7 @@ public class MusicPlayerFrame extends JFrame {
 		btnNext.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				if(handler.getPlayerState() == STATE.PLAYING){
+				if (handler.getPlayerState() == STATE.PLAYING){
 					handler.commands.add(new StopCommand());
 				}
 			}
@@ -368,7 +383,7 @@ public class MusicPlayerFrame extends JFrame {
 				} else {
 					selectSongId = 0;
 				}
-				
+
 				System.out.println("selectSongId: " + selectSongId);
 				Mp3 selectSong = library.getMp3List().get(selectSongId);
 				if (!selectSong.getFile().exists()) { // song does not exist
@@ -457,10 +472,20 @@ public class MusicPlayerFrame extends JFrame {
 
 
 	public static void playNextSong() {
-		currentlyPlaying.resetUpvoteCount();
-		redrawTable();
-		System.out.println("selectSongId: " + currentlyPlaying);
-		playButtonPressed();
+		try { 
+			currentlyPlaying.resetUpvoteCount();
+			redrawTable();
+			System.out.println("selectSongId: " + currentlyPlaying);
+			// make sure we're not already playing
+			if (handler.getPlayerState() == STATE.PLAYING){
+				handler.commands.add(new StopCommand());
+			} else {
+				playButtonPressed();
+			}
+		} catch (Exception e) {
+			System.out.println("HACKFIX: couldn't play next song: current song probably null. exception:");
+			e.printStackTrace();
+		}
 	}
 
 
