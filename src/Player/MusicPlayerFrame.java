@@ -148,7 +148,7 @@ public class MusicPlayerFrame extends JFrame {
 						.addComponent(bottomContentPanel, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
 				);
 
-		JScrollPane scrollPane_1 = new JScrollPane();
+		JScrollPane scrollPane = new JScrollPane();
 
 		JLabel lblCurrentlyPlaying = new JLabel("Currently Playing:");
 		lblCurrentlyPlaying.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -174,7 +174,7 @@ public class MusicPlayerFrame extends JFrame {
 		GroupLayout gl_mainContentPanel = new GroupLayout(mainContentPanel);
 		gl_mainContentPanel.setHorizontalGroup(
 				gl_mainContentPanel.createParallelGroup(Alignment.LEADING)
-				.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 767, Short.MAX_VALUE)
+				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 767, Short.MAX_VALUE)
 				.addGroup(gl_mainContentPanel.createSequentialGroup()
 						.addContainerGap()
 						.addComponent(lblCurrentlyPlaying)
@@ -197,31 +197,31 @@ public class MusicPlayerFrame extends JFrame {
 										.addPreferredGap(ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
 										.addComponent(lblSongTitle, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
 										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 318, GroupLayout.PREFERRED_SIZE))
+										.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 318, GroupLayout.PREFERRED_SIZE))
 				);
 
 		currentPlaylistTable = new JTable();
-		scrollPane_1.setViewportView(currentPlaylistTable);
+		scrollPane.setViewportView(currentPlaylistTable);
 
 		currentPlaylistTable.setModel(new DefaultTableModel(
 				library.getSongListInfo(),
 				PlayListColumnNames
 				)
 				);
+		
 		currentPlaylistTable.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 
-
-		currentPlaylistTable.getColumnModel().getColumn(1).setPreferredWidth(250);
-		currentPlaylistTable.getColumnModel().getColumn(2).setPreferredWidth(118);
-		currentPlaylistTable.getColumnModel().getColumn(3).setPreferredWidth(43);
-		currentPlaylistTable.getColumnModel().getColumn(4).setPreferredWidth(162);
-
+		currentPlaylistTable.getColumnModel().getColumn(1).setPreferredWidth(300);
+		currentPlaylistTable.getColumnModel().getColumn(2).setPreferredWidth(150);
+		currentPlaylistTable.getColumnModel().getColumn(3).setPreferredWidth(70);
+		currentPlaylistTable.getColumnModel().getColumn(4).setPreferredWidth(160);
+		currentPlaylistTable.getColumnModel().getColumn(5).setPreferredWidth(87);
 		currentPlaylistTable.getColumnModel().getColumn(1).setResizable(false);
 		currentPlaylistTable.getColumnModel().getColumn(2).setResizable(false);
 		currentPlaylistTable.getColumnModel().getColumn(3).setResizable(false);
 		currentPlaylistTable.getColumnModel().getColumn(4).setResizable(false);
-
-
+		currentPlaylistTable.getColumnModel().getColumn(5).setResizable(false);
+		
 		currentPlaylistTable.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
 		currentPlaylistTable.getColumnModel().removeColumn(currentPlaylistTable.getColumnModel().getColumn(0));
 		//currentPlaylistTable.getColumnModel().getColumn(0).setMaxWidth(0);
@@ -441,16 +441,17 @@ public class MusicPlayerFrame extends JFrame {
 			}
 		}
 
-		currentPlaylistTable.getColumnModel().getColumn(1).setPreferredWidth(146);
-		currentPlaylistTable.getColumnModel().getColumn(2).setPreferredWidth(118);
-		currentPlaylistTable.getColumnModel().getColumn(3).setPreferredWidth(43);
-		currentPlaylistTable.getColumnModel().getColumn(4).setPreferredWidth(162);
-
+		currentPlaylistTable.getColumnModel().getColumn(0).setPreferredWidth(300);
+		currentPlaylistTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+		currentPlaylistTable.getColumnModel().getColumn(2).setPreferredWidth(70);
+		currentPlaylistTable.getColumnModel().getColumn(3).setPreferredWidth(160);
+		currentPlaylistTable.getColumnModel().getColumn(4).setPreferredWidth(87);
+		
+		currentPlaylistTable.getColumnModel().getColumn(0).setResizable(false);
 		currentPlaylistTable.getColumnModel().getColumn(1).setResizable(false);
 		currentPlaylistTable.getColumnModel().getColumn(2).setResizable(false);
 		currentPlaylistTable.getColumnModel().getColumn(3).setResizable(false);
 		currentPlaylistTable.getColumnModel().getColumn(4).setResizable(false);
-
 
 	}
 
