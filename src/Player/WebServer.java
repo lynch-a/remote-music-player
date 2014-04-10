@@ -45,7 +45,8 @@ public class WebServer extends NanoHTTPD {
 			System.out.println("------------------");
 			
 			InetAddress addr = source.getInetAddress();
-			String sourceHost = addr.getHostName().toString();
+			String sourceHost = addr.toString();
+			System.out.println(sourceHost);
 
 			// do not allow a user to upvote too often
 			if (!lastActionTime.containsKey(sourceHost))  {

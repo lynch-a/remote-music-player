@@ -82,18 +82,6 @@ public class MusicPlayerFrame extends JFrame {
 				}
 			}
 		});
-
-
-		// FOR TESTING PURPOSES - skip to next song every 30 seconds.
-		new Thread() {
-			public void run() {
-				while (true) {
-					System.out.println("NEXT!");
-					MusicPlayerFrame.playNextSong();
-					try {Thread.sleep(30000);} catch (Exception e) {}
-				}
-			}
-		}.start();
 	}
 
 	/**

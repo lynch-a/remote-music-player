@@ -10425,6 +10425,14 @@ return jQuery;
 			
 		});
 		
+		$("button").on("touchstart", function(){ 
+    		$(this).removeClass("mobileHoverFix");
+		});
+		
+		$("button").on("touchend", function(){ 
+		    $(this).addClass("mobileHoverFix");
+		});
+
 		</script>
 
 		<title>Remote Democratic Jukebox</title>
@@ -10501,6 +10509,10 @@ return jQuery;
    				border-top-color: #ffffff;
    				background: #ffffff;
    			}
+   			.mobileHoverFix:hover,
+			.mobileHoverFix.hover{
+    			background-position: 0 0px;
+			}
 		</style>
 	</head>
 	<body>
