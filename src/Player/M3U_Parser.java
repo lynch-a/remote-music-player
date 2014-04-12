@@ -15,7 +15,7 @@ import java.io.FileNotFoundException;
  * long as we include this information, everything should be O.K.  Also, there
  * was absolutely no javadoc included in this thing, so all that you see, so far
  * as those type of comments, is stuff I've added.)
- * 
+ * <p>
  * This class only handles the initial import of m3u playlists, and not export.
  * If we're going to handle that too, we're going to need to extend this code,
  * but, for now, we've got something to work with.  (I looked into other

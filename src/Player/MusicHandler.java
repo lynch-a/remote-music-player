@@ -1,21 +1,21 @@
 package Player;
-import java.io.File;
+//import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import javax.swing.JFileChooser;
+/*import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
+*/
 import PlayerCommands.PauseCommand;
 import PlayerCommands.PlayCommand;
 import PlayerCommands.PlayerCommand;
 import PlayerCommands.ResumeCommand;
 import PlayerCommands.StopCommand;
 import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.AudioDevice;
+//import javazoom.jl.player.AudioDevice;
 import javazoom.jl.player.Player;
 
 
