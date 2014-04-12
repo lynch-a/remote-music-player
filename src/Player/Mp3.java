@@ -12,6 +12,7 @@ import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 /***
  * Mp3 container class, this fetches and makes easily accessible all the
  * metadata contained in the Mp3 or, if not present, sets default properties.
+ * @author Group 25
  */
 public class Mp3 implements Comparable<Mp3> {
 	/**
@@ -99,17 +100,6 @@ public class Mp3 implements Comparable<Mp3> {
 		return;
 	}
 	
-	/* sorry john
-	private String clipFileName() {
-		java.util.regex.Pattern p       = java.util.regex.Pattern.compile("^[/\\\\]?(?:.+[/\\\\]+?)?(.+?)[/\\\\]?$");
-	    java.util.regex.Matcher matcher = p.matcher(fileLocation);
-
-	    if ( matcher.find() ) {
-	        return matcher.group(1);
-	    }
-	    return null;
-	}
-	*/
 	
 	/**
 	 * Retrieves the song duration from the file and assigns the duration and
@@ -245,6 +235,7 @@ public class Mp3 implements Comparable<Mp3> {
 		return fileLocation;
 	}
 
+	
 	@Override
 	public int compareTo(Mp3 other) {
 		// arbitrarily complicated scoring algorithm
@@ -257,11 +248,21 @@ public class Mp3 implements Comparable<Mp3> {
 		}
 	}
 
+	
+	/**
+	 * Resets the upvote count for this instance.
+	 */
 	public void resetUpvoteCount() {
 		upvoteCount = 0;
 		
 	}
 	
+	
+	/**
+	 * Returns a shortened (35-character max) version of the song title.
+	 * @return String that is, at maximum, 35 characters in length, with the
+	 * last 3 characters being "...".
+	 */
 	public String getShortTitle() {
 		String shortTitle = title;
 		if (shortTitle.length() > 35) {
