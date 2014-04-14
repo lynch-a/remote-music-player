@@ -82,23 +82,50 @@ public class M3U_Parser {
 	 * imported.
 	 */
 	public class M3UHolder {
-		private String[] data, url;
+		/**
+		 * Information about the tracks pulled from the playlist.
+		 */
+		private String[] data;
+		/**
+		 * Addresses for tracks pulled from the playlist.
+		 */
+		private String[] url;
 
+		/**
+		 * Constructor, takes a list of names and urls and assignes them to data
+		 * and url, respectively.
+		 * @param names List of track names.
+		 * @param urls List of track urls.
+		 */
 		public M3UHolder(String[] names, String[] urls) {
 			this.data = names;
 			this.url = urls;
 		}
 
+		/**
+		 * Returns the length of the url string list.
+		 * @return Length of t he url string list.
+		 */
 		int getSize() {
 			if (url != null)
 				return url.length;
 			return 0;
 		}
 
+		/**
+		 * Returns the data contained at index n in the data list.
+		 * @param n Index to be grabbed.
+		 * @return Data from the index.
+		 */
 		String getName(int n) {
 			return data[n];
 		}
 
+		/**
+		 * Returns the url contained at index n in the url list.
+		 * @param n Index to be grabbed.
+		 * @return Url from the index.
+		 */
 		String getUrl(int n) {
 			return url[n];
 		}

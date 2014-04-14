@@ -47,11 +47,6 @@ public class Mp3 implements Comparable<Mp3> {
 	 * This track's current upvote count.
 	 */
 	private int upvoteCount = 0;
-	/**
-	 * This track's current downvote count.
-	 * TODO Remove downvote functionality, not wanted/needed.
-	 */
-	private int downvoteCount = 0;
 	
 	
 	/**
@@ -136,15 +131,6 @@ public class Mp3 implements Comparable<Mp3> {
 		upvoteCount++;
 		return;
 	}
-	
-	
-	/**
-	 * Add a downvote to the downvote count.
-	 */
-	public void addDownvote() {
-		downvoteCount++;
-		return;
-	}
 
 	
 	/**
@@ -153,15 +139,6 @@ public class Mp3 implements Comparable<Mp3> {
 	 */
 	public int getUpvotes() {
 		return upvoteCount;
-	}
-	
-	
-	/**
-	 * Returns the current downvote count.
-	 * @return Current downvote count.
-	 */
-	public int getDownvotes() {
-		return downvoteCount;
 	}
 	
 	
@@ -239,8 +216,8 @@ public class Mp3 implements Comparable<Mp3> {
 	@Override
 	public int compareTo(Mp3 other) {
 		// arbitrarily complicated scoring algorithm
-		int thisDelta = this.getUpvotes() - this.getDownvotes();
-		int otherDelta = other.getUpvotes() - other.getDownvotes();
+		int thisDelta = this.getUpvotes();
+		int otherDelta = other.getUpvotes();
 		if (thisDelta < otherDelta) {
 			return 1;
 		} else {

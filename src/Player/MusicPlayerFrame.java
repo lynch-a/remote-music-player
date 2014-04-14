@@ -1,5 +1,7 @@
 package Player;
+
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -8,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.net.URI;
 import java.util.Collections;
 
 import javax.swing.BorderFactory;
@@ -122,6 +125,38 @@ public class MusicPlayerFrame extends JFrame {
 			}
 		});
 		fileMenu.add(addSongMenuItem);
+		
+		JMenuItem addPlaylistMenuItem = new JMenuItem("Add Playlist to Library");
+		addPlaylistMenuItem.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				//TODO: PLAYLISTS
+			}
+		});
+		fileMenu.add(addPlaylistMenuItem);
+		
+		JMenu helpMenu = new JMenu("Help");
+		helpMenu.setIcon(null);
+		menuBar.add(helpMenu);
+		
+		JMenuItem openHelpMenuItem = new JMenuItem("Open Help Document");
+		openHelpMenuItem.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				try {
+					File helpDoc = new File("web/help.htm");
+					
+					Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+				    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+				        desktop.browse(helpDoc.toURI());
+				    }
+				} catch (Exception error) {
+					error.printStackTrace();
+				}
+				
+			}
+		});
+		helpMenu.add(openHelpMenuItem);
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -228,59 +263,20 @@ public class MusicPlayerFrame extends JFrame {
 		mainContentPanel.setLayout(gl_mainContentPanel);
 
 		JPanel playbackControlPanel = new JPanel();
-
-		JPanel seekPanel = new JPanel();
 		GroupLayout gl_bottomContentPanel = new GroupLayout(bottomContentPanel);
 		gl_bottomContentPanel.setHorizontalGroup(
-				gl_bottomContentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_bottomContentPanel.createSequentialGroup()
-						.addComponent(playbackControlPanel, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(seekPanel, GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE))
-				);
+			gl_bottomContentPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(Alignment.TRAILING, gl_bottomContentPanel.createSequentialGroup()
+					.addContainerGap(277, Short.MAX_VALUE)
+					.addComponent(playbackControlPanel, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE)
+					.addGap(257))
+		);
 		gl_bottomContentPanel.setVerticalGroup(
-				gl_bottomContentPanel.createParallelGroup(Alignment.LEADING)
-				.addComponent(playbackControlPanel, GroupLayout.PREFERRED_SIZE, 41, Short.MAX_VALUE)
-				.addComponent(seekPanel, GroupLayout.PREFERRED_SIZE, 41, Short.MAX_VALUE)
-				);
-
-		JSlider seekSlider = new JSlider();
-		seekSlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent arg0) {
-				// Update current seek time label to reflect slider position
-
-			}
-		});
-		seekSlider.setValue(0);
-
-		JLabel seekCurrentLabel = new JLabel("0:00");
-
-		JLabel seekDurationLabel = new JLabel("0:00");
-		GroupLayout gl_seekPanel = new GroupLayout(seekPanel);
-		gl_seekPanel.setHorizontalGroup(
-				gl_seekPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_seekPanel.createSequentialGroup()
-						.addGap(25)
-						.addComponent(seekCurrentLabel)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(seekSlider, GroupLayout.DEFAULT_SIZE, 318, Short.MAX_VALUE)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(seekDurationLabel)
-						.addContainerGap())
-				);
-		gl_seekPanel.setVerticalGroup(
-				gl_seekPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_seekPanel.createSequentialGroup()
-						.addGap(11)
-						.addGroup(gl_seekPanel.createParallelGroup(Alignment.LEADING, false)
-								.addComponent(seekCurrentLabel, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
-								.addComponent(seekSlider, GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
-								.addComponent(seekDurationLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-				);
-		seekPanel.setLayout(gl_seekPanel);
-
-		JButton btnPrevious = new JButton("<<");
+			gl_bottomContentPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_bottomContentPanel.createSequentialGroup()
+					.addComponent(playbackControlPanel, GroupLayout.PREFERRED_SIZE, 41, Short.MAX_VALUE)
+					.addContainerGap())
+		);
 
 		btnPlay = new JButton(">");
 		btnPlay.addMouseListener(new MouseAdapter() {
@@ -300,37 +296,25 @@ public class MusicPlayerFrame extends JFrame {
 				}
 			}
 		});
-
-
-		JSlider volumeSlider = new JSlider();
 		GroupLayout gl_playbackControlPanel = new GroupLayout(playbackControlPanel);
 		gl_playbackControlPanel.setHorizontalGroup(
-				gl_playbackControlPanel.createParallelGroup(Alignment.LEADING)
+			gl_playbackControlPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_playbackControlPanel.createSequentialGroup()
-						.addGap(11)
-						.addComponent(btnPrevious)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(btnPlay)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(btnNext)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(volumeSlider, GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
-						.addContainerGap())
-				);
+					.addGap(66)
+					.addComponent(btnPlay)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnNext)
+					.addContainerGap(88, Short.MAX_VALUE))
+		);
 		gl_playbackControlPanel.setVerticalGroup(
-				gl_playbackControlPanel.createParallelGroup(Alignment.LEADING)
+			gl_playbackControlPanel.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_playbackControlPanel.createSequentialGroup()
-						.addGap(5)
-						.addGroup(gl_playbackControlPanel.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnPrevious)
-								.addComponent(btnPlay)
-								.addComponent(btnNext))
-								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-								.addGroup(Alignment.TRAILING, gl_playbackControlPanel.createSequentialGroup()
-										.addContainerGap()
-										.addComponent(volumeSlider, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addGap(0, 0, Short.MAX_VALUE))
-				);
+					.addGap(5)
+					.addGroup(gl_playbackControlPanel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnPlay)
+						.addComponent(btnNext))
+					.addContainerGap(7, Short.MAX_VALUE))
+		);
 		playbackControlPanel.setLayout(gl_playbackControlPanel);
 		bottomContentPanel.setLayout(gl_bottomContentPanel);
 		contentPane.setLayout(gl_contentPane);
