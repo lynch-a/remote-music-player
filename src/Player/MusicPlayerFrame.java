@@ -40,7 +40,6 @@ import javax.swing.table.DefaultTableModel;
 
 import javazoom.jl.player.Player;
 import Player.MusicHandler.STATE;
-import Player.M3U_Parser;
 import PlayerCommands.PauseCommand;
 import PlayerCommands.PlayCommand;
 import PlayerCommands.ResumeCommand;
@@ -126,43 +125,6 @@ public class MusicPlayerFrame extends JFrame {
 			}
 		});
 		fileMenu.add(addSongMenuItem);
-		
-		JMenuItem addPlaylistMenuItem = new JMenuItem("Add Playlist to Library");
-		addPlaylistMenuItem.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				//TODO: PLAYLISTS
-				/*
-				JFileChooser plistChosen = new JFileChooser();
-				FileNameExtensionFilter m3ufilter = new FileNameExtensionFilter("M3U", "m3u");
-				plistChosen.setFileFilter(m3ufilter);
-				int returnVal = plistChosen.showOpenDialog(getParent());
-				if(returnVal == JFileChooser.APPROVE_OPTION) {
-					
-					try {
-						File m3u = plistChosen.getSelectedFile();
-						M3U_Parser mpar = new M3U_Parser();
-						M3U_Parser.M3UHolder m3holder = mpar.parseFile(m3u);
-						int len = m3holder.getSize();
-						for (int n = 0; n < len; n++) {
-							if (m3holder.getUrl(n).endsWith(".mp3") || m3holder.getUrl(n).endsWith(".MP3")) {
-								library.addSong(m3holder.getUrl(n));
-							} else {
-								System.out.println(m3holder.getName(n) + "is not an mp3 file.");
-							}
-							
-							//library.addSong(m3holder.getUrl(n));
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					
-					Collections.shuffle(library.getMp3List());
-					redrawTable();
-				}*/
-			}
-		});
-		fileMenu.add(addPlaylistMenuItem);
 		
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.setIcon(null);
