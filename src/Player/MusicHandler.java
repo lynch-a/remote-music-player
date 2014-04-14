@@ -22,11 +22,12 @@ import javazoom.jl.player.Player;
 /**
  * MusicHandler class, this launches and controls a thread that acts as the main
  * music player.
+ * @author Group 25
  */
 public class MusicHandler implements Runnable {
 	
 	/**
-	 * 
+	 * Enumeration of the current state of the player.
 	 */
 	enum STATE {
 		NOT_STARTED,
@@ -35,11 +36,11 @@ public class MusicHandler implements Runnable {
 		FINISHED
 	}
     /**
-     *
+     * Queue of commands for the player.
      */
 	static public LinkedBlockingQueue<PlayerCommand> commands = new LinkedBlockingQueue<PlayerCommand>();
 	/**
-	 * The actual music player.
+	 * The music player.
 	 */
     private Player player;
     /**
@@ -47,36 +48,46 @@ public class MusicHandler implements Runnable {
      */
     private final Object playerLock = new Object();
     /**
-     * Status variable describing what the player thread is doing/supposed to
-     * do.
+     * Status variable describing the state of the player.
     */
     private STATE playerState;
 
+    
     /**
-    * Constructor, sets the playerStatus to NOTSTARTED.
+    * Constructor, sets the playerState to NOTSTARTED.
     */
     public MusicHandler(){
     	playerState = STATE.NOT_STARTED;
     }
 
+    
     /**
     * Constructor, starts the player playing the passed InputStream.
     * @param inputStream InputStream of playable shit.
-    * @throws JavaLayerException Oh no!
+    * @throws JavaLayerException If player fails to start properly on the input
+    * stream.
     */
     public MusicHandler(final InputStream inputStream) throws JavaLayerException {
         this.player = new Player(inputStream);
     }
 
+    
     /**
     * Starts playback (resumes if paused).
-    * @throws JavaLayerException FUUUUUUUUUUUUUU
+    * @throws JavaLayerException On player failure.
     */
     public void play() throws JavaLayerException {
         synchronized (playerLock) {
             switch (playerState) {
                 case NOT_STARTED:
+                	/**
+                	 * New thread for playback.
+                	 */
                     final Runnable r = new Runnable() {
+                    	/**
+                    	 * Run method for this thread, sets it's state and
+                    	 * begins playback of next song.
+                    	 */
                         public void run() {
                             playInternal();
                             MusicPlayerFrame.playNextSong();
@@ -96,6 +107,7 @@ public class MusicHandler implements Runnable {
             }
         }
     }
+    
 
     /**
     * Pauses playback. Returns true if new state is PAUSED.
@@ -110,8 +122,10 @@ public class MusicHandler implements Runnable {
         }
     }
 
+    
     /**
-     * Resumes playback. Returns true if the new state is PLAYING.
+     * Resumes playback.
+     * @return True if the new state is PLAYING, False if something got boned.
      */
     public boolean resume() {
         synchronized (playerLock) {
@@ -123,8 +137,9 @@ public class MusicHandler implements Runnable {
         }
     }
 
+    
     /**
-     * Stops playback. If not playing, does nothing
+     * Stops playback. If not playing, does nothing.
      */
     public void stop() {
         synchronized (playerLock) {
@@ -133,6 +148,10 @@ public class MusicHandler implements Runnable {
         }
     }
 
+    
+    /**
+     * Makes sure the player is ready to begin playback.
+     */
     private void playInternal() {
         while (playerState != STATE.FINISHED) {
             try {
@@ -201,7 +220,12 @@ public class MusicHandler implements Runnable {
 
 		}
 	}
-    // demo how to use
+
+	
+	/**
+	 * Takes an Mp3 object and begins playback on that track.
+	 * @param song Mp3 object to be played.
+	 */
     public void playSong(Mp3 song) {
         try {
             FileInputStream input = new FileInputStream(song.getFilePath());
@@ -215,6 +239,11 @@ public class MusicHandler implements Runnable {
         }
     }
 
+    
+    /**
+     * Returns this player's state.
+     * @return This instance's playerState value.
+     */
 	public STATE getPlayerState() {
 		return this.playerState;
 	}
