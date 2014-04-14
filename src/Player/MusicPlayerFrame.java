@@ -1,5 +1,7 @@
 package Player;
+
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -8,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.net.URI;
 import java.util.Collections;
 
 import javax.swing.BorderFactory;
@@ -141,6 +144,16 @@ public class MusicPlayerFrame extends JFrame {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				//TODO: HELPDOC
+				try {
+					File helpDoc = new File("web/help.html");
+					
+					Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+				    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+				        desktop.browse(helpDoc.toURI());
+				    }
+				} catch (Exception error) {
+					error.printStackTrace();
+				}
 				
 			}
 		});
