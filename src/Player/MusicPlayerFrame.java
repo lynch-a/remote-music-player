@@ -10,7 +10,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.net.URI;
+//import java.net.URI;
 import java.util.Collections;
 
 import javax.swing.BorderFactory;
@@ -26,20 +26,21 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
+//import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+//import javax.swing.event.ChangeEvent;
+//import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 import javazoom.jl.player.Player;
 import Player.MusicHandler.STATE;
+import Player.M3U_Parser;
 import PlayerCommands.PauseCommand;
 import PlayerCommands.PlayCommand;
 import PlayerCommands.ResumeCommand;
@@ -131,6 +132,34 @@ public class MusicPlayerFrame extends JFrame {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 				//TODO: PLAYLISTS
+				/*
+				JFileChooser plistChosen = new JFileChooser();
+				FileNameExtensionFilter m3ufilter = new FileNameExtensionFilter("M3U", "m3u");
+				plistChosen.setFileFilter(m3ufilter);
+				int returnVal = plistChosen.showOpenDialog(getParent());
+				if(returnVal == JFileChooser.APPROVE_OPTION) {
+					
+					try {
+						File m3u = plistChosen.getSelectedFile();
+						M3U_Parser mpar = new M3U_Parser();
+						M3U_Parser.M3UHolder m3holder = mpar.parseFile(m3u);
+						int len = m3holder.getSize();
+						for (int n = 0; n < len; n++) {
+							if (m3holder.getUrl(n).endsWith(".mp3") || m3holder.getUrl(n).endsWith(".MP3")) {
+								library.addSong(m3holder.getUrl(n));
+							} else {
+								System.out.println(m3holder.getName(n) + "is not an mp3 file.");
+							}
+							
+							//library.addSong(m3holder.getUrl(n));
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					
+					Collections.shuffle(library.getMp3List());
+					redrawTable();
+				}*/
 			}
 		});
 		fileMenu.add(addPlaylistMenuItem);
