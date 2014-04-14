@@ -124,6 +124,12 @@ public class MusicPlayerFrame extends JFrame {
 		fileMenu.add(addSongMenuItem);
 		
 		JMenuItem addPlaylistMenuItem = new JMenuItem("Add Playlist to Library");
+		addPlaylistMenuItem.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				//TODO: PLAYLISTS
+			}
+		});
 		fileMenu.add(addPlaylistMenuItem);
 		
 		JMenu helpMenu = new JMenu("Help");
@@ -131,6 +137,13 @@ public class MusicPlayerFrame extends JFrame {
 		menuBar.add(helpMenu);
 		
 		JMenuItem openHelpMenuItem = new JMenuItem("Open Help Document");
+		openHelpMenuItem.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				//TODO: HELPDOC
+				
+			}
+		});
 		helpMenu.add(openHelpMenuItem);
 
 		contentPane = new JPanel();

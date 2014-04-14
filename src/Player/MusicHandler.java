@@ -177,11 +177,8 @@ public class MusicHandler implements Runnable {
 	public void run() {
 
 		while (true) {
-			//System.out.println(commands.size());
 			if (commands.size() > 0) {
 				Object command = commands.poll();
-
-				// TODO: pause functionality
 				if (command instanceof PlayCommand) {
 					try {
 						final PlayCommand playCommand = (PlayCommand) command;
