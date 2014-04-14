@@ -143,9 +143,8 @@ public class MusicPlayerFrame extends JFrame {
 		openHelpMenuItem.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				//TODO: HELPDOC
 				try {
-					File helpDoc = new File("web/help.html");
+					File helpDoc = new File("web/help.htm");
 					
 					Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
 				    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
