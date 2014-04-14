@@ -38,14 +38,13 @@ public class MusicLibrary {
 	/**
 	 * Creates an Mp3 instance and adds it to the mp3List array.
 	 * @param filePath String path to the mp3 we want to add.
-	 * @return The Mp3 instance we are adding. (WHY DO WE HAVE A RETURN HERE?)
 	 */
-	public Mp3 addSong(String filePath) {
+	public void addSong(String filePath) {
 		Mp3 mp3 = new Mp3(filePath, nextSongId);
 		mp3List.add(mp3);
 		nextSongId++;
 		sortPlaylist();
-		return mp3;
+		return;
 	}
 	
 	/**

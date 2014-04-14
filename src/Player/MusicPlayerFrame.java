@@ -116,7 +116,7 @@ public class MusicPlayerFrame extends JFrame {
 					File[] mp3s = filesChosen.getSelectedFiles();
 					//System.out.println("You chose to open this file: " + filesChosen.getSelectedFile().getAbsolutePath());
 					for (File i : mp3s){
-						Mp3 mp3 = library.addSong(i.getAbsolutePath());
+						library.addSong(i.getAbsolutePath());
 						//((DefaultTableModel) currentPlaylistTable.getModel()).addRow(mp3.parseMetaData()); // is this the right way to do this? Yes
 					}
 					Collections.shuffle(library.getMp3List());
