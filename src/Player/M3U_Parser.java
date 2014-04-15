@@ -93,8 +93,28 @@ public class M3U_Parser {
 						data = data.concat(arr[n].replace(nu, "").trim())
 								.concat("&&&&");
 						urls = urls.concat("####");
-					} else if (arr[n].contains("/home")) {
-						String nu = arr[n].substring(arr[n].indexOf("/home"),
+					} else if (arr[n].contains("../")) {
+						String nu = arr[n].substring(arr[n].indexOf("../"),
+								arr[n].indexOf(".mp3") + 4);
+
+						//System.out.println(nu);
+
+						urls = urls.concat(nu);
+						data = data.concat(arr[n].replace(nu, "").trim())
+								.concat("&&&&");
+						urls = urls.concat("####");
+					} else if (arr[n].contains("./")) {
+						String nu = arr[n].substring(arr[n].indexOf("./"),
+								arr[n].indexOf(".mp3") + 4);
+
+						//System.out.println(nu);
+
+						urls = urls.concat(nu);
+						data = data.concat(arr[n].replace(nu, "").trim())
+								.concat("&&&&");
+						urls = urls.concat("####");
+					} else if (arr[n].contains("/")) {
+						String nu = arr[n].substring(arr[n].indexOf("/"),
 								arr[n].indexOf(".mp3") + 4);
 
 						//System.out.println(nu);
