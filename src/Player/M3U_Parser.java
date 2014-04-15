@@ -113,7 +113,7 @@ public class M3U_Parser {
 						data = data.concat(arr[n].replace(nu, "").trim())
 								.concat("&&&&");
 						urls = urls.concat("####");
-					} else if (arr[n].contains("/")) {
+					} /* else if (arr[n].contains("/")) {
 						String nu = arr[n].substring(arr[n].indexOf("/"),
 								arr[n].indexOf(".mp3") + 4);
 
@@ -123,7 +123,7 @@ public class M3U_Parser {
 						data = data.concat(arr[n].replace(nu, "").trim())
 								.concat("&&&&");
 						urls = urls.concat("####");
-					}
+					} */
 				}
 				
 			}
