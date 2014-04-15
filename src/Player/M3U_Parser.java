@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 
 
 /**
- * M3U Parser class. This is NOT OUR ORIGINAL CODE, but code freely available
+ * M3U Parser class. This is MOSTLY not our own code, but code freely available
  * under the <a href='http://www.eclipse.org/legal/epl-v10.html'>Eclipse Public
  * License 1.0</a> from <a href='https://code.google.com/p/java-m3u-file-parser/'>
  * this project</a>. (There were no available .jar files and I figured that, so
@@ -61,6 +61,10 @@ public class M3U_Parser {
 			String[] arr = stream.split("#EXTINF.*,");
 			String urls = "", data = "";
 			// clean
+			
+			/*
+			 * BEGIN ALL THE WORK I DID HERE -- John G
+			 */
 			{
 				for (int n = 0; n < arr.length; n++) {
 					/*
@@ -89,8 +93,8 @@ public class M3U_Parser {
 						data = data.concat(arr[n].replace(nu, "").trim())
 								.concat("&&&&");
 						urls = urls.concat("####");
-					} else if (arr[n].contains("//home")) {
-						String nu = arr[n].substring(arr[n].indexOf("//home"),
+					} else if (arr[n].contains("/home")) {
+						String nu = arr[n].substring(arr[n].indexOf("/home"),
 								arr[n].indexOf(".mp3") + 4);
 
 						//System.out.println(nu);
@@ -101,7 +105,13 @@ public class M3U_Parser {
 						urls = urls.concat("####");
 					}
 				}
+				
 			}
+			
+			/*
+			 * END ALL THE WORK I DID HERE -- John G
+			 */
+			
 			return new M3UHolder(data.split("&&&&"), urls.split("####"));
 		}
 		return null;
