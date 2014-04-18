@@ -100,6 +100,7 @@ public class Mp3 implements Comparable<Mp3> {
 	 * Retrieves the song duration from the file and assigns the duration and
 	 * durStr variables accordingly.
 	 */
+	
 	private void getTime(){
 		duration = 0;
 		try {
@@ -242,8 +243,8 @@ public class Mp3 implements Comparable<Mp3> {
 	 */
 	public String getShortTitle() {
 		String shortTitle = title;
-		if (shortTitle.length() > 35) {
-			shortTitle = shortTitle.substring(0, 32) + "...";
+		if (shortTitle.length() > 45) {
+			shortTitle = shortTitle.substring(0, 42) + "...";
 		}
 		
 		return shortTitle;

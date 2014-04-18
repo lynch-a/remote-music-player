@@ -144,11 +144,12 @@ public class MusicHandler implements Runnable {
     public void stop() {
         synchronized (playerLock) {
             playerState = STATE.FINISHED;
+            player.close();
             playerLock.notifyAll();
         }
     }
 
-    
+   
     /**
      * Makes sure the player is ready to begin playback.
      */

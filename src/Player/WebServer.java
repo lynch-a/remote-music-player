@@ -14,8 +14,8 @@ import java.util.Scanner;
  */
 public class WebServer extends NanoHTTPD {
 
-	private int UPVOTE_DELAY_SECONDS = 7;
-	
+	private int UPVOTE_DELAY_SECONDS = 10;
+
 	public HashMap<String, Long> lastActionTime = new HashMap<String, Long>();
 
 	public WebServer() throws IOException {
@@ -36,14 +36,14 @@ public class WebServer extends NanoHTTPD {
 		System.out.println("params: " + Arrays.toString(params));
 
 		if (params[0].equals("upvote")) {
-			
+
 			// DEBUG - FOR TESTING
 			System.out.println("------------------");
 			for (String ip : lastActionTime.keySet()) {
 				System.out.println("ip in action map: " + ip);
 			}
 			System.out.println("------------------");
-			
+
 			InetAddress addr = source.getInetAddress();
 			String sourceHost = addr.toString();
 			System.out.println(sourceHost);
@@ -73,7 +73,7 @@ public class WebServer extends NanoHTTPD {
 				// Cheat for now for when no search results entered, I'll fix later...probably
 				return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, getMainPageData());
 			}
-			
+
 		} else if (params[0].equals("reload")) {  // Returns basic page data when refresh is called
 			return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, getMainPageData());
 		}
@@ -98,14 +98,14 @@ public class WebServer extends NanoHTTPD {
 			e.printStackTrace();
 			return new NanoHTTPD.Response( HTTP_OK, MIME_HTML, "Error - Unable to find index file.");
 		}
-		
+
 		return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, response);
 	}
 
 	public String getMainPageData() {
 		MusicLibrary library = MusicPlayerFrame.getLibrary();
 		ArrayList<Mp3> mp3List = library.getMp3List();
-		
+
 		Mp3 playing = MusicPlayerFrame.getCurrentlyPlaying();
 
 		// Replace placeholder values with dynamic data from the application
@@ -137,7 +137,7 @@ public class WebServer extends NanoHTTPD {
 			}
 		}
 		songlist += "</table>";
-		
+
 		return songlist;
 	}
 
@@ -160,11 +160,14 @@ public class WebServer extends NanoHTTPD {
 				"<th></th>" +
 				"</tr>";
 		for (Mp3 song : mp3List) {
-			
+
 			if(song != playing){
 				String[] data = song.getWebData();
+				if (searchParam.length() > 20) {
+					return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, response);
+				}
 				// only search based on title for now
-				System.out.println("Searching on: " + data[0] + "|" +searchParam + "|");
+				//System.out.println("Searching on: " + data[0] + "|" +searchParam + "|");
 				if(data[0].toLowerCase().contains(searchParam.toLowerCase())) {
 					response += "<tr>";
 					for(int i = 0; i < data.length; i++) {
@@ -185,10 +188,10 @@ public class WebServer extends NanoHTTPD {
 			}
 		}
 		response += "</table>";
-		
+
 		return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, response);
 	}
-	
+
 	public Response handleUpvote(String[] params) {
 		int upvoteCount;
 		try {
