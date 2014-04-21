@@ -45,7 +45,10 @@ import PlayerCommands.PlayCommand;
 import PlayerCommands.ResumeCommand;
 import PlayerCommands.StopCommand;
 
-
+/**
+ * Main interface class, this constructs and runs everything in the main window.
+ * @author Group 25
+ */
 public class MusicPlayerFrame extends JFrame {
 	private static JPanel contentPane;
 	private static Player player;
@@ -62,7 +65,9 @@ public class MusicPlayerFrame extends JFrame {
 	 */
 	public static void main(String[] args) {
 
-		// spin up web server
+		/**
+		 * Starts up the web server.
+		 */
 		new Thread() {
 			public void run() {
 				try {
@@ -74,7 +79,9 @@ public class MusicPlayerFrame extends JFrame {
 		}.start();
 		new Thread(handler).start(); // start thread that handles commands and playing the songs
 
-		// start UI thread
+		/**
+		 * Starts the UI thread.
+		 */
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -312,6 +319,11 @@ public class MusicPlayerFrame extends JFrame {
 		contentPane.setLayout(gl_contentPane);
 	}
 
+	
+	/**
+	 * Toggles playback (or outputs an error if there's nothing in the music
+	 * library).
+	 */
 	public static void playButtonPressed() {
 		if (handler.getPlayerState() == STATE.PLAYING) {
 			System.out.println("sending pause command");
@@ -367,29 +379,40 @@ public class MusicPlayerFrame extends JFrame {
 		}
 	}
 
-	public void pauseButtonPressed() {
-		// TODO Auto-generated method stub
-
-	}
-
+	
+	/**
+	 * Returns the player being used for playback.
+	 * @return
+	 */
 	public Player getPlayer() {
 		return player;
 	}
 
+	
+	/**
+	 * Sets the player being used for playback to the one given as input.
+	 * @param player The new player to be used.
+	 */
 	public void setPlayer(Player player) {
 		this.player = player;
 	}
 
-
-	// return the currently selected playlist?
-	public static MusicLibrary getCurrentList() {
-		return library;
-	}
-
+	
+	/**
+	 * Returns the currently playing Mp3 object.
+	 * @return Currently playing Mp3 object.
+	 */
 	public static Mp3 getCurrentlyPlaying(){
 		return currentlyPlaying;
 	}
 
+	
+	/**
+	 * Applies an upvote to the song referenced by songId
+	 * @param songId The integer identifier of the track to be upvoted.
+	 * @return The success (or failure) value of the method called on the Mp3
+	 * referenced to add an upvote.
+	 */
 	public static int doUpvote(int songId) {
 		Mp3 mp3 = library.getMp3ById(songId);
 		if(mp3 != currentlyPlaying){
@@ -400,6 +423,9 @@ public class MusicPlayerFrame extends JFrame {
 	}
 
 
+	/**
+	 * Redraws the music library table in the main window.
+	 */
 	public static void redrawTable() {
 		System.out.println("redrawing");
 		// clear the table
@@ -431,11 +457,19 @@ public class MusicPlayerFrame extends JFrame {
 
 	}
 
+	
+	/**
+	 * Returns this frame's music library instance.
+	 * @return This frame's music library.
+	 */
 	public static MusicLibrary getLibrary() {
 		return library;
 	}
 
 
+	/**
+	 * Begins playback (err, tries to) of the next track in the play queue.
+	 */
 	public static void playNextSong() {
 		try { 
 			currentlyPlaying.resetUpvoteCount();
@@ -454,6 +488,10 @@ public class MusicPlayerFrame extends JFrame {
 	}
 
 
+	/**
+	 * Returns the title of the currently playing track.
+	 * @return Title string of currently playing Mp3 instance.
+	 */
 	public static String getCurrentlyPlayingTitle() {
 		if (handler.getPlayerState() == STATE.PLAYING){
 			return currentlyPlaying.getTitle();

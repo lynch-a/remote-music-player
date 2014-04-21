@@ -100,7 +100,6 @@ public class Mp3 implements Comparable<Mp3> {
 	 * Retrieves the song duration from the file and assigns the duration and
 	 * durStr variables accordingly.
 	 */
-	
 	private void getTime(){
 		duration = 0;
 		try {
@@ -215,6 +214,11 @@ public class Mp3 implements Comparable<Mp3> {
 
 	
 	@Override
+	/**
+	 * Comparable method override for Mp3 class, allows upvote-based sorting.
+	 * @return Comparison value, 1 if this instance has less upvotes than the
+	 * compared instance, -1 otherwise.
+	 */
 	public int compareTo(Mp3 other) {
 		// arbitrarily complicated scoring algorithm
 		int thisDelta = this.getUpvotes();
@@ -237,8 +241,8 @@ public class Mp3 implements Comparable<Mp3> {
 	
 	
 	/**
-	 * Returns a shortened (35-character max) version of the song title.
-	 * @return String that is, at maximum, 35 characters in length, with the
+	 * Returns a shortened (45-character max) version of the song title.
+	 * @return String that is, at maximum, 45 characters in length, with the
 	 * last 3 characters being "...".
 	 */
 	public String getShortTitle() {
