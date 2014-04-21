@@ -10,18 +10,33 @@ import java.util.Properties;
 import java.util.Scanner;
 
 /**
- * An example of subclassing NanoHTTPD to make a custom HTTP server.
+ * Subclassing NanoHTTPD to make a custom HTTP server.
  */
 public class WebServer extends NanoHTTPD {
 
+	/**
+	 * Delay for upvotes, in seconds.
+	 */
 	private int UPVOTE_DELAY_SECONDS = 10;
-
+	/**
+	 * Hash listing of the last recorded action times, for keeping track of
+	 * vote times.
+	 */
 	public HashMap<String, Long> lastActionTime = new HashMap<String, Long>();
 
+	
+	/**
+	 * Constructor, simply calls the NanoHTTPD constructor.
+	 * @throws IOException Oops.
+	 */
 	public WebServer() throws IOException {
 		super(8080, new File("."));
 	}
 
+	
+	/**
+	 * Serves and manages the web-based client interface.
+	 */
 	public Response serve( String uri, String method, Properties header, Properties parms, Properties files, Socket source ) {
 		System.out.println("URI: " + uri);
 		if (uri.length() > 1) {
@@ -81,6 +96,11 @@ public class WebServer extends NanoHTTPD {
 
 	}
 
+	
+	/**
+	 * Handles the index file.
+	 * @return NanoHTTPD response including the index.html file.
+	 */
 	public Response handleIndex() {
 
 		// Fetch pre-formatted index file.
@@ -102,6 +122,12 @@ public class WebServer extends NanoHTTPD {
 		return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, response);
 	}
 
+	
+	/**
+	 * Gets the main page data from MusicPlayerFrame and formats it for placing
+	 * into an html file.
+	 * @return Library track list, formatted for html display.
+	 */
 	public String getMainPageData() {
 		MusicLibrary library = MusicPlayerFrame.getLibrary();
 		ArrayList<Mp3> mp3List = library.getMp3List();
@@ -141,6 +167,13 @@ public class WebServer extends NanoHTTPD {
 		return songlist;
 	}
 
+	
+	/**
+	 * Handles the search function.
+	 * @param searchParam The term to be searched for in the music library.
+	 * @return A NanoHTTPD response, including the search results formatted for
+	 * inclusion in an html file.
+	 */
 	public Response handleSearch(String searchParam) {
 		MusicLibrary library = MusicPlayerFrame.getLibrary();
 		ArrayList<Mp3> mp3List = library.getMp3List();
@@ -192,6 +225,14 @@ public class WebServer extends NanoHTTPD {
 		return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, response);
 	}
 
+	
+	/**
+	 * Handles the upvote function.
+	 * @param params Integer identifier (in string form) of the song to be
+	 * upvoted.
+	 * @return NanoHTTPD response, including a re-built library track list (to
+	 * reflect the applied upvote).
+	 */
 	public Response handleUpvote(String[] params) {
 		int upvoteCount;
 		try {
