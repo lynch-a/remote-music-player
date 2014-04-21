@@ -40,7 +40,6 @@ import javax.swing.table.DefaultTableModel;
 
 import javazoom.jl.player.Player;
 import Player.MusicHandler.STATE;
-import Player.M3U_Parser;
 import PlayerCommands.PauseCommand;
 import PlayerCommands.PlayCommand;
 import PlayerCommands.ResumeCommand;
@@ -127,49 +126,6 @@ public class MusicPlayerFrame extends JFrame {
 			}
 		});
 		fileMenu.add(addSongMenuItem);
-		
-		JMenuItem addPlistMenuItem = new JMenuItem("Add Playlist to Library");
-		addPlistMenuItem.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				JFileChooser fileChosen = new JFileChooser();
-				FileNameExtensionFilter m3ufilter = new FileNameExtensionFilter("M3U", "m3u");
-				fileChosen.setFileFilter(m3ufilter);
-				int returnVal = fileChosen.showOpenDialog(getParent());
-				if(returnVal == JFileChooser.APPROVE_OPTION) {
-					try {
-						File m3u = fileChosen.getSelectedFile();
-						M3U_Parser m3uparse = new M3U_Parser();
-						M3U_Parser.M3UHolder m3uhold = m3uparse.parseFile(m3u);
-						
-						/*
-						System.out.print(m3u.getName());
-						System.out.print(" has ");
-						System.out.print(m3uhold.getSize());
-						System.out.print("\n");
-						*/
-						
-						for (int n = 0; n < m3uhold.getSize(); n++) {
-							/*
-							System.out.print("At index ");
-							System.out.println(n);
-							System.out.println(m3uhold.getName(n));
-							System.out.println(m3uhold.getUrl(n));
-							*/
-							
-							library.addSong(m3uhold.getUrl(n));
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					
-					
-					Collections.shuffle(library.getMp3List());
-					redrawTable();
-				}
-			}
-		});
-		fileMenu.add(addPlistMenuItem);
 		
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.setIcon(null);
