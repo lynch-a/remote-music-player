@@ -368,6 +368,7 @@ public class MusicPlayerFrame extends JFrame {
 					JOptionPane.showMessageDialog(contentPane, message, "Could not locate mp3 file", JOptionPane.ERROR_MESSAGE);
 					((DefaultTableModel) currentPlaylistTable.getModel()).removeRow(0);
 					library.getMp3List().remove(selectSong);
+					playNextSong();
 				} else { // start playing a song
 					currentlyPlaying = library.getMp3List().get(selectSongId);
 					handler.commands.add(new PlayCommand(currentlyPlaying));
