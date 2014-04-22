@@ -98,7 +98,7 @@ public class MusicPlayerFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public MusicPlayerFrame() {
-		setTitle("RDJ");
+		setTitle("Remote Democratic Jukebox");
 		setResizable(false);
 		library = new MusicLibrary("Library");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
